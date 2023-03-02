@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/auth/verifyotp.dart';
+import 'package:whatsapp_clone/widget/custom_button.dart';
+import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../styles/stylesheet.dart';
 import '../styles/textTheme.dart';
 import '../widget/custom_widget.dart';
@@ -57,21 +59,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       Flexible(
                         flex: 1,
-                        child: TextField(
+                        child: CustomTextFieldView(
+                          hint: "+91",
                           readOnly: true,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                    color: primaryColor, width: 1)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                    color: primaryColor, width: 0.5)),
-                            hintText: "+91",
-                            hintStyle: TextThemeProvider.bodyTextSmall
-                                .copyWith(color: blackColor),
-                          ),
                         ),
                       ),
                       const SizedBox(
@@ -79,37 +69,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       Flexible(
                         flex: 4,
-                        child: TextFormField(
-                          style: TextThemeProvider.bodyTextSmall
-                              .copyWith(color: blackColor),
-                          onChanged: (value) {
-                            if (value.length == 10) {
-                              FocusScope.of(context).unfocus();
-                            }
-                          },
-                          keyboardType: TextInputType.number,
+                        child: CustomTextFieldView(
+                          hint: "Enter Phone Number",
+                          numpad: true,
                           validator: (v) {
-                            if (v!.isEmpty) {
+                            if (numberController.text.isEmpty) {
                               return "Please Enter Phone Number";
                             } else {
                               return null;
                             }
                           },
                           controller: numberController,
-                          decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                      color: primaryColor, width: 1)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                      color: primaryColor, width: 1)),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 20),
-                              hintStyle: TextThemeProvider.bodyTextSecondary
-                                  .copyWith(color: primaryColor),
-                              hintText: "Enter Phone Number"),
+                          onChange: (value) {
+                            if (value.length == 10) {
+                              FocusScope.of(context).unfocus();
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -124,30 +99,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 30,
                   ),
                   isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(
-                            color: primaryColor,
-                          ),
-                        )
-                      : ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(primaryColor),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6))),
-                              fixedSize: MaterialStateProperty.all(Size(
-                                  MediaQuery.of(context).size.width * 0.7,
-                                  45))),
-                          onPressed: () {
+                      ? showLoading()
+                      : CustomButton(
+                          btnName: "Next",
+                          onTap: () {
                             if (_key.currentState!.validate()) {
                               createUser();
 
                               FocusScope.of(context).unfocus();
                             }
-                          },
-                          child: const Text("Next"),
-                        ),
+                          }),
                   const SizedBox(
                     height: 60,
                   ),

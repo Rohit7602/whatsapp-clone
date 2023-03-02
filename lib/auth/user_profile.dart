@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whatsapp_clone/widget/custom_button.dart';
+import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../main.dart';
 import '../screen/home/homepage.dart';
 import '../styles/stylesheet.dart';
@@ -78,7 +80,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                 borderRadius: BorderRadius.circular(100),
                                 child: pickedFile == null
                                     ? Image.asset(
-                                        "assets/default_image.png",
+                                        "asset/default_image.png",
                                         fit: BoxFit.cover,
                                       )
                                     : Image.file(
@@ -111,40 +113,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ],
                       ),
                       sizedBox(20),
-                      TextFormField(
-                        onTap: () {
-                          unfocus(context);
-                        },
-                        validator: (v) {
-                          if (v!.isEmpty) {
-                            return "Please Enter name";
-                          } else {
-                            return null;
-                          }
-                        },
+                      CustomTextFieldView(
+                        capitalText: true,
+                        onTap: () => unfocus(context),
+                        hint: "Enter Your Name",
                         controller: nameController,
-                        decoration: InputDecoration(
-                            hintText: "Enter Your Name",
-                            suffixIcon: IconButton(
-                                onPressed: () {
-                                  unfocus(context);
-                                  setState(() {
-                                    showEmoji = !showEmoji;
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.emoji_emotions,
-                                  color: primaryColor,
-                                ))),
-                      ),
-                      sizedBox(20),
-                      TextFormField(
-                        onTap: () {
-                          unfocus(context);
-                          setState(() {
-                            showEmoji = !showEmoji;
-                          });
-                        },
                         validator: (v) {
                           if (v!.isEmpty) {
                             return "Please Enter name";
@@ -152,16 +125,38 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             return null;
                           }
                         },
-                        controller: descriptionController,
-                        decoration: const InputDecoration(
-                          hintText: "Enter Your Description",
+                        suffixIconEnable: true,
+                        suffixIcon: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.emoji_emotions,
+                            color: primaryColor,
+                          ),
                         ),
+                      ),
+                      sizedBox(15),
+                      CustomTextFieldView(
+                        capitalText: true,
+                        onTap: () {
+                          unfocus(context);
+                        },
+                        hint: "Enter Your Description",
+                        controller: descriptionController,
+                        validator: (v) {
+                          if (descriptionController.text.isEmpty) {
+                            return "Please Enter Description";
+                          } else {
+                            return null;
+                          }
+                        },
                       ),
                       sizedBox(30),
                       isLoading
                           ? showLoading()
-                          : ElevatedButton(
-                              onPressed: () async {
+                          : CustomButton(
+                              btnName: "Save Profile",
+                              onTap: () async {
+                                unfocus(context);
                                 if (_key.currentState!.validate() &&
                                     pickedFile != null) {
                                   setState(() {
@@ -179,7 +174,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   }
                                 }
                               },
-                              child: const Text("Save Your Profile"),
                             ),
                     ],
                   ),
@@ -245,46 +239,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  // addDataOnDb() async {
-  //   FirebaseAuth auth = FirebaseAuth.instance;
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  //   Map<String, dynamic> bodyData = {
-  //     "Name": nameController.text,
-  //     "Description": descriptionController.text,
-  //     "Number": widget.phoneNumber,
-  //     "UserId": auth.currentUser!.uid,
-  //     "ProfileImage": downloadUrl.isEmpty ? "" : downloadUrl,
-  //   };
-  //   try {
-  //     await database
-  //         .ref("users/${auth.currentUser!.uid}")
-  //         .set(bodyData)
-  //         .then((value) async {
-  //       if (mounted) {
-  //         prefs.setBool("isLogin", true);
-  //         Navigator.of(context).pushAndRemoveUntil(
-  //             MaterialPageRoute(builder: (context) => HomePageScreen()),
-  //             (route) => false);
-  //         setState(() {
-  //           isLoading = false;
-  //         });
-  //       } else {
-  //         print("Not Mounted");
-  //         setState(() {
-  //           isLoading = false;
-  //         });
-  //       }
-  //     });
-  //   } on FirebaseAuth catch (e) {
-  //     print(e.toString());
-  //   } on FirebaseAuthException catch (e) {
-  //     print(e);
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
   createUser() async {
     try {
       Map<String, dynamic> bodyData = {
@@ -301,6 +255,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           .then((value) async {
         if (mounted) {
           sharedPrefs!.setBool("isLogin", true);
+
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Register Success")));
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                   builder: (context) => HomeTabBar(

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/model/chatroom_model.dart';
 
@@ -11,8 +12,11 @@ final database = FirebaseDatabase.instance;
 final auth = FirebaseAuth.instance;
 
 class DatabaseEventListner {
-  databaseEvent(userId, context) {
-    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+  BuildContext context;
+  GetterSetterModel provider;
+  DatabaseEventListner({required this.context, required this.provider});
+  databaseEvent(userId) {
+    // var provider = Provider.of<GetterSetterModel>(context, listen: false);
     database.ref("ChatRooms/LastMessage/$userId/").onValue.listen(
       (event) {
         // chatRoomModel = event.snapshot.children

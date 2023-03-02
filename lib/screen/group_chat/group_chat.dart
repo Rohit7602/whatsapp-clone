@@ -5,19 +5,15 @@ class GroupChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Group Name'),
+        title: const Text('Group Name'),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // TODO: Implement search functionality
-            },
+            icon: const Icon(Icons.search),
+            onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: () {
-              // TODO: Implement menu functionality
-            },
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {},
           ),
         ],
       ),
@@ -25,25 +21,26 @@ class GroupChatScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: 20,
+              itemCount: 1,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundImage: NetworkImage(
                         'https://randomuser.me/api/portraits/women/2.jpg'),
                   ),
                   title: Text('Sender $index'),
                   subtitle: Text('Message $index'),
-                  trailing: Text('12:34 PM'),
+                  trailing: const Text('12:34 PM'),
                 );
               },
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               children: [
-                Expanded(
+                const Expanded(
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Type a message',
@@ -51,9 +48,9 @@ class GroupChatScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 8.0),
+                const SizedBox(width: 8.0),
                 FloatingActionButton(
-                  child: Icon(Icons.send),
+                  child: const Icon(Icons.send),
                   onPressed: () {
                     // TODO: Implement send message functionality
                   },

@@ -64,7 +64,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
               child: Column(
                 children: [
                   Container(
-                      height: 300,
+                      height: 250,
                       width: MediaQuery.of(context).size.width,
                       decoration: const BoxDecoration(
                           image: DecorationImage(
@@ -184,7 +184,16 @@ class _VerifyOTPState extends State<VerifyOTP> {
       var authUser = await auth.signInWithCredential(credential);
 
       if (authUser.user!.phoneNumber!.isNotEmpty) {
-        pushTo(context, UserProfileScreen(phoneNumber: widget.phoneNumber));
+        var userPath = await database.ref("users").get();
+        var getUserKey = userPath.children
+            .any((element) => element.key.toString() == auth.currentUser!.uid);
+
+        if (getUserKey == true) {
+          sharedPrefs!.setBool("isLogin", true);
+          pushTo(context, HomeTabBar(currentIndex: 1));
+        } else {
+          pushTo(context, UserProfileScreen(phoneNumber: widget.phoneNumber));
+        }
       }
     } catch (e) {
       print(e.toString());
@@ -196,34 +205,3 @@ class _VerifyOTPState extends State<VerifyOTP> {
     }
   }
 }
-
-
-
-//  Map<String, dynamic> bodyData = {
-//           "Name": nameController.text,
-//           "Number": widget.phoneNumber,
-//           "UserId": auth.currentUser!.uid,
-//         };
-
-//         await database
-//             .ref("users/${auth.currentUser!.uid}")
-//             .set(bodyData)
-//             .then((value) async {
-//           if (mounted) {
-//             sharedPrefs!.setBool("isLogin", true);
-//             Navigator.of(context).pushAndRemoveUntil(
-//                 MaterialPageRoute(
-//                     builder: (context) => HomeTabBar(
-//                           currentIndex: 1,
-//                         )),
-//                 (route) => false);
-//             setState(() {
-//               isLoading = false;
-//             });
-//           } else {
-//             print("Not Mounted");
-//             setState(() {
-//               isLoading = false;
-//             });
-//           }
-//         });

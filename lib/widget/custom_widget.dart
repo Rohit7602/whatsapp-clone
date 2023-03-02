@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../styles/stylesheet.dart';
+
 pushTo(context, pushto) {
   return Navigator.of(context)
       .push(MaterialPageRoute(builder: (context) => pushto));
@@ -25,5 +27,8 @@ sizedBox(double height) {
 }
 
 showLoading() {
-  return const Center(child: CircularProgressIndicator());
+  return const Center(
+      child: CircularProgressIndicator(
+    color: primaryColor,
+  ));
 }

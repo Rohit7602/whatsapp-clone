@@ -323,13 +323,5 @@ class _ChatRoomState extends State<ChatRoom> {
             "ChatRooms/${createChatRoomId(auth.currentUser!.uid, widget.targetUser["UserId"])}")
         .push()
         .set(bodyData);
-
-    // await database.ref("LastMessage/${widget.targetUser["UserId"]}").set({
-    //   "LastMessage": messageController.text,
-    // });
-
-    // Message Scroll In End of List
-    // scrollController!.animateTo(scrollController!.position.maxScrollExtent,
-    //     duration: const Duration(milliseconds: 200), curve: Curves.bounceInOut);
   }
 }

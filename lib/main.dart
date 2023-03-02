@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/screen/home/homepage.dart';
 import 'package:whatsapp_clone/splash.dart';
+import 'package:whatsapp_clone/tab_bar/tab_bar.dart';
 
 SharedPreferences? sharedPrefs;
 void main() async {

@@ -31,12 +31,13 @@ class _ContactScreenState extends State<ContactScreen> {
           children: [
             Text(
               "Contact Screen",
-              style: TextThemeProvider.bodyTextSmall,
+              style: TextThemeProvider.heading2
+                  .copyWith(fontWeight: FontWeight.w500),
             ),
             Text(
               "100 contacts",
               style: TextThemeProvider.bodyTextSecondary
-                  .copyWith(fontWeight: FontWeight.w300),
+                  .copyWith(fontWeight: FontWeight.w400),
             ),
           ],
         ),
@@ -46,10 +47,27 @@ class _ContactScreenState extends State<ContactScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            sizedBox(10),
+            ListTile(
+              leading: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle, color: lightGreenColor),
+                  child: const Icon(
+                    Icons.group,
+                    color: whiteColor,
+                    size: 35,
+                  )),
+              title: Text(
+                "New Group",
+                style: TextThemeProvider.bodyTextSmall,
+              ),
+            ),
             sizedBox(10),
             Text(
               "All Contacts",
@@ -63,8 +81,6 @@ class _ContactScreenState extends State<ContactScreen> {
                 var userData = userList.getAllUser.firstWhere(
                     (element) => element["UserId"] == auth.currentUser!.uid);
 
-                print(userList.getAllUser[index]["Number"]);
-
                 return ListTile(
                   onTap: () => pushTo(
                       context,
@@ -76,18 +92,26 @@ class _ContactScreenState extends State<ContactScreen> {
                     width: 50,
                     decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: lightGreyColor),
-                    child: const Icon(
-                      Icons.person,
-                      color: whiteColor,
-                      size: 40,
-                    ),
+                    child: userList.getAllUser[index]["ProfileImage"].isEmpty
+                        ? const Icon(
+                            Icons.person,
+                            color: whiteColor,
+                            size: 40,
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(
+                              userList.getAllUser[index]["ProfileImage"],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                   ),
                   title: Text(
                     userList.getAllUser[index]["Number"],
                     style: TextThemeProvider.bodyTextSmall,
                   ),
                   subtitle: Text(
-                    "Comming Soon..",
+                    userList.getAllUser[index]['Description'],
                     style: TextThemeProvider.bodyTextSecondary
                         .copyWith(color: greyColor, fontSize: 12),
                   ),

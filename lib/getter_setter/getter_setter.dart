@@ -32,12 +32,18 @@ class GetterSetterModel with ChangeNotifier {
 
   clearMyChats() {
     _myChats.clear();
+    notifyListeners();
   }
 
-  List<ChatRoomModel> _lastMessage = [];
-  List<ChatRoomModel> get lastMessage => _lastMessage;
-  getLastMesage(List<ChatRoomModel> chats) {
-    _lastMessage = chats;
+  List<Map<Object?, Object?>> _lastMessage = [];
+  List<Map<Object?, Object?>> get lastMessage => _lastMessage;
+  getLastMesage(Map<Object?, Object?> chats) {
+    _lastMessage.add(chats);
+    notifyListeners();
+  }
+
+  clearLastMessage() {
+    _lastMessage.clear();
     notifyListeners();
   }
 }

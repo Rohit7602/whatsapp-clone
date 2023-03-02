@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/auth/register.dart';
+import 'package:whatsapp_clone/splash.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
 import '../screen/home/homepage.dart';
@@ -21,7 +22,7 @@ class HomeTabBar extends StatefulWidget {
 
 class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
   TabController? tabController;
-
+  var navigatorKey = GlobalKey<NavigatorState>();
   DateTime timeBackPressed = DateTime.now();
 
   @override
@@ -69,7 +70,7 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
               Row(
                 children: [
                   Text(
-                    "Whatsapp",
+                    "Hex Chat",
                     style: TextThemeProvider.heading1.copyWith(
                         color: whiteColor,
                         fontWeight: FontWeight.w500,
@@ -87,11 +88,36 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
                   ),
                   IconButton(
                     onPressed: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
+                      PopupMenuButton(itemBuilder: (context) {
+                        return [
+                          const PopupMenuItem<int>(
+                            value: 0,
+                            child: Text("My Account"),
+                          ),
+                          const PopupMenuItem<int>(
+                            value: 1,
+                            child: Text("Settings"),
+                          ),
+                          const PopupMenuItem<int>(
+                            value: 2,
+                            child: Text("Logout"),
+                          ),
+                        ];
+                      }, onSelected: (value) {
+                        if (value == 0) {
+                          print("My account menu is selected.");
+                        } else if (value == 1) {
+                          print("Settings menu is selected.");
+                        } else if (value == 2) {
+                          print("Logout menu is selected.");
+                        }
+                      });
+                      // showPopupMenu();
+                      // SharedPreferences prefs =
+                      //     await SharedPreferences.getInstance();
 
-                      prefs.clear();
-                      pushToAndRemove(context, const RegisterScreen());
+                      // prefs.clear();
+                      // pushToAndRemove(context, const RegisterScreen());
                     },
                     icon: const Icon(Icons.more_vert, color: whiteColor),
                   ),
@@ -151,29 +177,42 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
       items: [
         PopupMenuItem(
           onTap: () {
-            pushTo(context, const StatusScreen());
+            getNavigation("1");
           },
-          value: 1,
+          value: "1",
           child: const Text(
             "New Group",
           ),
         ),
-        const PopupMenuItem(
-          value: 2,
-          child: Text(
+        PopupMenuItem(
+          onTap: () => getNavigation("2"),
+          value: "2",
+          child: const Text(
             "Settings",
           ),
         ),
         PopupMenuItem(
-          onTap: () {
-            pushToAndRemove(context, const RegisterScreen());
-          },
-          value: 3,
+          onTap: () {},
+          value: "3",
           child: const Text(
             "Logout",
           ),
         ),
       ],
     );
+  }
+
+  getNavigation(String route) {
+    switch (route) {
+      case "1":
+        return pushTo(context, const SplashScreen());
+      case "2":
+        return pushTo(context, const RegisterScreen());
+      case "3":
+        return pushTo(context, const SplashScreen());
+
+      default:
+        return null;
+    }
   }
 }

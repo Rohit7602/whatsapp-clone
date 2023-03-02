@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/screen/home/homepage.dart';
 import 'package:whatsapp_clone/model/message_model.dart';
 import 'package:whatsapp_clone/styles/stylesheet.dart';
@@ -52,9 +54,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   void initState() {
     messageList.clear();
-
     scrollController = ScrollController();
-
     database
         .ref(
             "ChatRooms/${createChatRoomId(auth.currentUser!.uid, widget.targetUser["UserId"])}")
@@ -64,11 +64,24 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           .map((e) => MessageModel.fromJson(
               e.value as Map<Object?, Object?>, e.key.toString()))
           .toList();
-
       if (!mounted) return;
-
       setState(() {
         messageList = msg;
+      });
+      database
+          .ref(
+              "ChatRooms/${createChatRoomId(auth.currentUser!.uid, widget.targetUser["UserId"])}")
+          .onValue
+          .listen((event) {
+        var eventKey = event.snapshot.children.map((e) => e.key).toList();
+        for (var element in eventKey) {
+          database
+              .ref(
+                  "ChatRooms/${createChatRoomId(auth.currentUser!.uid, widget.targetUser["UserId"])}/$element/")
+              .update({
+            "seen": true,
+          });
+        }
       });
     });
 
@@ -391,12 +404,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     setState(() {
       lastMessage = messageController.text;
     });
-    await database
-        .ref("ChatRooms/LastMessage/${widget.targetUser["UserId"]}/")
-        .set({
-      "LastMessage": messageController.text,
-      "sentOn": DateTime.now().toIso8601String(),
-    });
+
     messageController.clear();
     setState(() {
       isFieldEmpty = true;
@@ -408,7 +416,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         .push()
         .set(bodyData);
 
-    // Message Scroll In End of List
     scrollController!.animateTo(scrollController!.position.maxScrollExtent,
         duration: const Duration(milliseconds: 10), curve: Curves.ease);
   }
