@@ -1,10 +1,11 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:whatsapp_clone/auth/user_profile.dart';
+import 'package:whatsapp_clone/database/event_listner.dart';
 import 'package:whatsapp_clone/main.dart';
 import 'package:whatsapp_clone/styles/textTheme.dart';
 import 'package:whatsapp_clone/tab_bar/tab_bar.dart';
@@ -22,7 +23,6 @@ class VerifyOTP extends StatefulWidget {
 }
 
 class _VerifyOTPState extends State<VerifyOTP> {
-  final database = FirebaseDatabase.instance;
   final nameController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final pinController = TextEditingController();
@@ -172,8 +172,6 @@ class _VerifyOTPState extends State<VerifyOTP> {
   }
 
   verifyOtp() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-
     try {
       setState(() {
         isLoading = true;
@@ -193,6 +191,9 @@ class _VerifyOTPState extends State<VerifyOTP> {
           pushTo(context, HomeTabBar(currentIndex: 1));
         } else {
           pushTo(context, UserProfileScreen(phoneNumber: widget.phoneNumber));
+          setState(() {
+            isLoading = false;
+          });
         }
       }
     } catch (e) {

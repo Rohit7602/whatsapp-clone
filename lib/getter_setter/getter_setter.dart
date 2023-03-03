@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/model/chatroom_model.dart';
+import 'package:whatsapp_clone/model/last_message_model.dart';
+
+import '../model/user_model.dart';
 
 class GetterSetterModel with ChangeNotifier {
   bool _initializeChatroom = true;
@@ -13,6 +16,13 @@ class GetterSetterModel with ChangeNotifier {
   bool get isLoading => _isLoading;
   updateLoading(bool loading) {
     _isLoading = loading;
+    notifyListeners();
+  }
+
+  UserModel? _userModel;
+  UserModel get userModel => _userModel!;
+  getUserModel(UserModel data) {
+    _userModel = data;
     notifyListeners();
   }
 
@@ -35,15 +45,22 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<Object?, Object?>> _lastMessage = [];
-  List<Map<Object?, Object?>> get lastMessage => _lastMessage;
-  getLastMesage(Map<Object?, Object?> chats) {
+  List<LastMessageModel> _lastMessage = [];
+  List<LastMessageModel> get lastMessage => _lastMessage;
+  getLastMesage(LastMessageModel chats) {
     _lastMessage.add(chats);
     notifyListeners();
   }
 
   clearLastMessage() {
     _lastMessage.clear();
+    notifyListeners();
+  }
+
+  String _getuserStatus = "";
+  String get getUserStatus => _getuserStatus;
+  getStatus(String status) {
+    _getuserStatus = status;
     notifyListeners();
   }
 }

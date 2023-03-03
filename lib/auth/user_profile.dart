@@ -247,6 +247,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         "Description": descriptionController.text,
         "UserId": auth.currentUser!.uid,
         "ProfileImage": downloadUrl.isEmpty ? "" : downloadUrl,
+        "CreatedOn": DateTime.now().toIso8601String(),
       };
 
       await database
@@ -258,12 +259,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Register Success")));
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => HomeTabBar(
-                        currentIndex: 1,
-                      )),
-              (route) => false);
+          pushToAndRemove(
+              context,
+              HomeTabBar(
+                currentIndex: 1,
+              ));
           setState(() {
             isLoading = false;
           });

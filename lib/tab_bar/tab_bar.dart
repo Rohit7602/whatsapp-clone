@@ -1,8 +1,12 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/auth/register.dart';
+import 'package:whatsapp_clone/database/event_listner.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/model/user_model.dart';
 import 'package:whatsapp_clone/splash.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
@@ -20,7 +24,8 @@ class HomeTabBar extends StatefulWidget {
   State<HomeTabBar> createState() => _HomeTabBarState();
 }
 
-class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
+class _HomeTabBarState extends State<HomeTabBar>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   TabController? tabController;
   var navigatorKey = GlobalKey<NavigatorState>();
   DateTime timeBackPressed = DateTime.now();
@@ -29,7 +34,8 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
   void initState() {
     tabController = TabController(
         initialIndex: widget.currentIndex, vsync: this, length: 4);
-
+    WidgetsBinding.instance.addObserver(this);
+    setStatus("online");
     super.initState();
   }
 
@@ -37,6 +43,28 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
   void dispose() {
     tabController!.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      setStatus("online");
+    } else {
+      setStatus("offline");
+    }
+  }
+
+  void setStatus(String status) async {
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    database.ref("users/${auth.currentUser!.uid}").update({
+      "Status": status,
+    });
+
+    var userPath = await database.ref("users/${auth.currentUser!.uid}").get();
+    var userModel = UserModel.fromJson(
+        userPath.value as Map<Object?, Object?>, userPath.key.toString());
+    provider.getUserModel(userModel);
   }
 
   @override
@@ -83,41 +111,19 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
                         color: whiteColor),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      getNavigation("2");
+                    },
                     icon: const Icon(Icons.search, color: whiteColor),
                   ),
                   IconButton(
                     onPressed: () async {
-                      PopupMenuButton(itemBuilder: (context) {
-                        return [
-                          const PopupMenuItem<int>(
-                            value: 0,
-                            child: Text("My Account"),
-                          ),
-                          const PopupMenuItem<int>(
-                            value: 1,
-                            child: Text("Settings"),
-                          ),
-                          const PopupMenuItem<int>(
-                            value: 2,
-                            child: Text("Logout"),
-                          ),
-                        ];
-                      }, onSelected: (value) {
-                        if (value == 0) {
-                          print("My account menu is selected.");
-                        } else if (value == 1) {
-                          print("Settings menu is selected.");
-                        } else if (value == 2) {
-                          print("Logout menu is selected.");
-                        }
-                      });
                       // showPopupMenu();
-                      // SharedPreferences prefs =
-                      //     await SharedPreferences.getInstance();
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
 
-                      // prefs.clear();
-                      // pushToAndRemove(context, const RegisterScreen());
+                      prefs.clear();
+                      pushToAndRemove(context, const RegisterScreen());
                     },
                     icon: const Icon(Icons.more_vert, color: whiteColor),
                   ),
@@ -176,23 +182,24 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
       position: const RelativeRect.fromLTRB(10, 10, 0, 10),
       items: [
         PopupMenuItem(
-          onTap: () {
-            getNavigation("1");
-          },
+          onTap: () => getNavigation("1"),
           value: "1",
           child: const Text(
             "New Group",
           ),
         ),
         PopupMenuItem(
-          onTap: () => getNavigation("2"),
+          onTap: () {
+            popView(context);
+            getNavigation("2");
+          },
           value: "2",
           child: const Text(
             "Settings",
           ),
         ),
         PopupMenuItem(
-          onTap: () {},
+          onTap: () => getNavigation("3"),
           value: "3",
           child: const Text(
             "Logout",

@@ -5,16 +5,16 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/chat/chat_room.dart';
+import 'package:whatsapp_clone/model/last_message_model.dart';
+import 'package:whatsapp_clone/screen/chat/chat_room.dart';
 import 'package:whatsapp_clone/database/event_listner.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/model/chatroom_model.dart';
+import 'package:whatsapp_clone/model/user_model.dart';
+import 'package:whatsapp_clone/screen/setting/profile_screen.dart';
 import 'package:whatsapp_clone/widget/custom_widget.dart';
 import '../../styles/stylesheet.dart';
 import '../../styles/textTheme.dart';
 import '../contact/contact.dart';
-
-dynamic lastMessage;
 
 class HomePageScreen extends StatefulWidget {
   @override
@@ -24,8 +24,6 @@ class HomePageScreen extends StatefulWidget {
 class _HomePageScreenState extends State<HomePageScreen> {
   final database = FirebaseDatabase.instance;
   final auth = FirebaseAuth.instance;
-
-  List<ChatRoomModel> chatRoomModel = [];
 
   @override
   void initState() {
@@ -50,10 +48,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
         var listMessagePath = msgPath.children
             .firstWhere((element) => element.key == lastMessageGet.last);
 
-        if (mounted) {
-          provider
-              .getLastMesage(listMessagePath.value as Map<Object?, Object?>);
-        }
+        var getLastMessage = LastMessageModel.fromJson(
+            listMessagePath.value as Map<Object?, Object?>,
+            listMessagePath.key.toString());
+
+        print('User Mode :::: ${getLastMessage.lastMessage}');
+
+        provider.getLastMesage(getLastMessage);
       }
     });
 
@@ -67,7 +68,19 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
     if (snapshot.exists) {
       var data = snapshot.children.map((element) => element.value).toList();
+
       provider.getUsers(data);
+
+      var myData = snapshot.children
+          .firstWhere((e) => e.key.toString() == auth.currentUser!.uid);
+
+      print("My Data Checker ::: ${myData.value}");
+
+      var fetchMyData = UserModel.fromJson(
+          myData.value as Map<Object?, Object?>, myData.key.toString());
+
+      provider.getUserModel(fetchMyData);
+      print('myData');
     }
   }
 
@@ -106,6 +119,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<GetterSetterModel>(context);
+
     final eventsLink =
         DatabaseEventListner(context: context, provider: provider);
 
@@ -132,23 +146,41 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       itemBuilder: (context, i) {
                         var dateTime = DateFormat('hh:mm a').format(
                             DateTime.parse(
-                                data.lastMessage[i]["sentOn"].toString()));
-                        var userData = data.getAllUser.firstWhere((element) =>
-                            element["UserId"] == auth.currentUser!.uid);
+                                data.lastMessage[i].dateTime.toString()));
 
                         return ListTile(
                           onTap: () {
                             pushTo(
                                 context,
                                 ChatRoomScreen(
-                                    myData: userData,
                                     targetUser: data.myChatRooms[i]));
                           },
                           title: Text(
                             data.myChatRooms[i]["Number"].toString(),
                           ),
-                          subtitle:
-                              Text(data.lastMessage[i]["message"].toString()),
+                          subtitle: Row(
+                            children: [
+                              data.lastMessage[i].seen
+                                  ? const Icon(
+                                      Icons.done_all,
+                                      color: primaryColor,
+                                      size: 15,
+                                    )
+                                  : const Icon(
+                                      Icons.check,
+                                      color: primaryColor,
+                                      size: 15,
+                                    ),
+                              const SizedBox(
+                                width: 3,
+                              ),
+                              data.lastMessage[i].messageType == 'image'
+                                  ? const Text("Photo")
+                                  : data.lastMessage[i].messageType == "text"
+                                      ? Text(data.lastMessage[i].lastMessage)
+                                      : const Text("coming, soon"),
+                            ],
+                          ),
                           leading: Container(
                             height: 50,
                             width: 50,
@@ -170,7 +202,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                   ),
                           ),
                           trailing: Text(
-                            dateTime,
+                            dateTime.toString(),
                             style: TextThemeProvider.bodyTextSecondary
                                 .copyWith(color: greyColor, fontSize: 12),
                           ),
@@ -205,7 +237,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 : FloatingActionButton(
                     backgroundColor: primaryColor,
                     onPressed: () async {
-                      pushTo(context, const ContactScreen());
+                      pushTo(context, const ProfileScreen());
                     },
                     child: const Icon(Icons.chat),
                   );

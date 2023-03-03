@@ -31,7 +31,7 @@ class CustomTextFieldView extends StatelessWidget {
       this.readOnly = false,
       this.maxLines = 1,
       this.isDisabled = false,
-      this.capitalText = false,
+      this.capitalText = true,
       this.onTap,
       this.validator,
       this.onChange})
