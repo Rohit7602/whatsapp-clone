@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/auth/register.dart';
-import 'package:whatsapp_clone/database/event_listner.dart';
+import 'package:whatsapp_clone/database_event/event_listner.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/model/user_model.dart';
 import 'package:whatsapp_clone/splash.dart';
@@ -14,6 +14,7 @@ import '../screen/home/homepage.dart';
 import '../screen/status/status.dart';
 import '../styles/stylesheet.dart';
 import '../styles/textTheme.dart';
+import '../widget/custom_instance.dart';
 import '../widget/custom_widget.dart';
 
 class HomeTabBar extends StatefulWidget {
@@ -94,7 +95,7 @@ class _HomeTabBarState extends State<HomeTabBar>
           toolbarHeight: 115,
           title: Column(
             children: [
-              sizedBox(10),
+              getHeight(10),
               Row(
                 children: [
                   Text(

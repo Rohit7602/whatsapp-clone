@@ -51,7 +51,7 @@ class _ContactScreenState extends State<ContactScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            sizedBox(10),
+            getHeight(10),
             ListTile(
               leading: Container(
                   height: 50,
@@ -68,12 +68,12 @@ class _ContactScreenState extends State<ContactScreen> {
                 style: TextThemeProvider.bodyTextSmall,
               ),
             ),
-            sizedBox(10),
+            getHeight(10),
             Text(
               "All Contacts",
               style: TextThemeProvider.bodyTextSmall.copyWith(color: greyColor),
             ),
-            sizedBox(10),
+            getHeight(10),
             userList.getAllUser.isEmpty
                 ? const Text("You Don't have any contacts")
                 : ListView.builder(
@@ -81,17 +81,19 @@ class _ContactScreenState extends State<ContactScreen> {
                     itemCount: userList.getAllUser.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        onTap: () => pushTo(
-                            context,
-                            ChatRoomScreen(
-                                targetUser: userList.getAllUser[index])),
+                        onTap: () {
+                          pushTo(
+                              context,
+                              ChatRoomScreen(
+                                  targetUser:
+                                      userList.getAllUser[index].userId));
+                        },
                         leading: Container(
                           height: 50,
                           width: 50,
                           decoration: const BoxDecoration(
                               shape: BoxShape.circle, color: lightGreyColor),
-                          child: userList
-                                  .getAllUser[index]["ProfileImage"].isEmpty
+                          child: userList.getAllUser[index].profileImage == ""
                               ? const Icon(
                                   Icons.person,
                                   color: whiteColor,
@@ -100,17 +102,17 @@ class _ContactScreenState extends State<ContactScreen> {
                               : ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
                                   child: Image.network(
-                                    userList.getAllUser[index]["ProfileImage"],
+                                    userList.getAllUser[index].profileImage,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                         ),
                         title: Text(
-                          userList.getAllUser[index]["Number"],
+                          userList.getAllUser[index].number,
                           style: TextThemeProvider.bodyTextSmall,
                         ),
                         subtitle: Text(
-                          userList.getAllUser[index]['Description'],
+                          userList.getAllUser[index].description,
                           style: TextThemeProvider.bodyTextSecondary
                               .copyWith(color: greyColor, fontSize: 12),
                         ),

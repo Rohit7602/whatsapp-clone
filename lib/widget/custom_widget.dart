@@ -20,9 +20,15 @@ unfocus(context) {
   return FocusScope.of(context).unfocus();
 }
 
-sizedBox(double height) {
+getHeight(double height) {
   return SizedBox(
     height: height,
+  );
+}
+
+getWidth(double width) {
+  return SizedBox(
+    width: width,
   );
 }
 

@@ -180,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   .copyWith(fontWeight: FontWeight.w500),
             ),
           ),
-          sizedBox(30),
+          getHeight(30),
           Text(
             "Powered by Hex Chat",
             style:
@@ -216,7 +216,7 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
             "Profile Photo",
             style: TextThemeProvider.heading2.copyWith(color: greyColor),
           ),
-          sizedBox(25),
+          getHeight(25),
           Row(
             children: [
               Column(
@@ -256,8 +256,8 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                   ),
                 ],
               ),
-              const SizedBox(
-                width: 30,
+              getWidth(
+                30,
               ),
               Column(
                 children: [
@@ -332,7 +332,7 @@ class _ImageDialogState extends State<ImageDialog> {
               fit: BoxFit.cover,
             ),
           ),
-          sizedBox(30),
+          getHeight(30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -344,10 +344,10 @@ class _ImageDialogState extends State<ImageDialog> {
                         popView(context);
                       },
                       icon: const Icon(Icons.close))),
-              const Flexible(
+              Flexible(
                 flex: 1,
-                child: SizedBox(
-                  width: 10,
+                child: getWidth(
+                  10,
                 ),
               ),
               Flexible(
@@ -444,7 +444,7 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
             "Enter your name",
             style: TextThemeProvider.bodyText,
           ),
-          sizedBox(20),
+          getHeight(20),
           Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -453,18 +453,16 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
               hint: widget.userName,
             ),
           ),
-          sizedBox(20),
+          getHeight(20),
           Row(
             children: [
               Flexible(
                   flex: 3,
                   child: CustomButton(
                       btnName: "Cancel", onTap: () => popView(context))),
-              const Flexible(
+              Flexible(
                 flex: 1,
-                child: SizedBox(
-                  width: 10,
-                ),
+                child: getWidth(10),
               ),
               Flexible(
                   flex: 3,
@@ -508,7 +506,7 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
                           })),
             ],
           ),
-          sizedBox(20),
+          getHeight(20),
         ],
       ),
     );
@@ -542,7 +540,7 @@ class _DescriptionModalBottomSheetState
             "Enter your description",
             style: TextThemeProvider.bodyText,
           ),
-          sizedBox(20),
+          getHeight(20),
           Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -551,17 +549,17 @@ class _DescriptionModalBottomSheetState
               hint: widget.description,
             ),
           ),
-          sizedBox(20),
+          getHeight(20),
           Row(
             children: [
               Flexible(
                   flex: 3,
                   child: CustomButton(
                       btnName: "Cancel", onTap: () => isLoading = false)),
-              const Flexible(
+              Flexible(
                 flex: 1,
-                child: SizedBox(
-                  width: 10,
+                child: getWidth(
+                  10,
                 ),
               ),
               Flexible(
@@ -607,7 +605,7 @@ class _DescriptionModalBottomSheetState
                           })),
             ],
           ),
-          sizedBox(20),
+          getHeight(20),
         ],
       ),
     );

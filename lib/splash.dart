@@ -1,12 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/main.dart';
 import 'package:whatsapp_clone/styles/stylesheet.dart';
-import 'package:whatsapp_clone/styles/textTheme.dart';
 import 'package:whatsapp_clone/tab_bar/tab_bar.dart';
+import 'package:whatsapp_clone/widget/custom_widget.dart';
 import 'auth/register.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -52,9 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 width: MediaQuery.of(context).size.width * 0.6,
               ),
               const SizedBox(height: 20.0),
-              const CircularProgressIndicator(
-                color: primaryColor,
-              ),
+              showLoading(),
             ],
           ),
         ),

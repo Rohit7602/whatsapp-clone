@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/model/chatroom_model.dart';
-import 'package:whatsapp_clone/model/last_message_model.dart';
-
+import 'package:whatsapp_clone/model/target_user_model.dart';
+import '../model/message_model.dart';
 import '../model/user_model.dart';
 
 class GetterSetterModel with ChangeNotifier {
@@ -14,7 +13,7 @@ class GetterSetterModel with ChangeNotifier {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  updateLoading(bool loading) {
+  loadingState(bool loading) {
     _isLoading = loading;
     notifyListeners();
   }
@@ -26,34 +25,18 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  List _getUserList = [];
-  List get getAllUser => _getUserList;
-  getUsers(List users) {
-    _getUserList = users;
+  List<UserModel> _getUserList = [];
+  List<UserModel> get getAllUser => _getUserList;
+  getUsers(List<UserModel> users) {
+    _getUserList.addAll(users);
     notifyListeners();
   }
 
-  final List<Map<Object?, Object?>> _myChats = [];
-  List<Map<Object?, Object?>> get myChatRooms => _myChats;
-  getMyChats(Map<Object?, Object?> chats) {
-    _myChats.add(chats);
-    notifyListeners();
-  }
-
-  clearMyChats() {
-    _myChats.clear();
-    notifyListeners();
-  }
-
-  List<LastMessageModel> _lastMessage = [];
-  List<LastMessageModel> get lastMessage => _lastMessage;
-  getLastMesage(LastMessageModel chats) {
-    _lastMessage.add(chats);
-    notifyListeners();
-  }
-
-  clearLastMessage() {
-    _lastMessage.clear();
+  final List<TargetUserModel> _targetModel = [];
+  List<TargetUserModel> get targetUserModel => _targetModel;
+  getLastMesage(TargetUserModel chats) {
+    _targetModel.clear();
+    _targetModel.add(chats);
     notifyListeners();
   }
 
@@ -61,6 +44,13 @@ class GetterSetterModel with ChangeNotifier {
   String get getUserStatus => _getuserStatus;
   getStatus(String status) {
     _getuserStatus = status;
+    notifyListeners();
+  }
+
+  List<MessageModel> _messageModel = [];
+  List<MessageModel> get messageModel => _messageModel;
+  updateMessageModel(List<MessageModel> msg) {
+    _messageModel = msg;
     notifyListeners();
   }
 }

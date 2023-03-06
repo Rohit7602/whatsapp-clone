@@ -1,17 +1,20 @@
-// ignore_for_file: avoid_print, invalid_use_of_visible_for_testing_member, use_build_context_synchronously
+// ignore_for_file: avoid_print, invalid_use_of_visible_for_testing_member, use_build_context_synchronously, must_be_immutable
 
 import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/components/profile_avatar.dart';
+import 'package:whatsapp_clone/functions/create_user.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/widget/custom_appbar.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
+import 'package:whatsapp_clone/widget/custom_image.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../main.dart';
-import '../screen/home/homepage.dart';
 import '../styles/stylesheet.dart';
-import '../styles/textTheme.dart';
 import '../tab_bar/tab_bar.dart';
 import '../widget/custom_widget.dart';
 import '../widget/upload_image_db.dart';
@@ -32,19 +35,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   TextEditingController descriptionController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   File? pickedFile;
-  bool isLoading = false;
+
   bool showEmoji = false;
   String downloadUrl = "";
 
   @override
   Widget build(BuildContext context) {
-    print("Download URL Checker ::: $downloadUrl");
+    var provider = Provider.of<GetterSetterModel>(context);
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        automaticallyImplyLeading: false,
-        title: const Text("Complete your profile"),
+      appBar: customAppBar(
+        title: "Complete your profile",
         centerTitle: true,
       ),
       body: GestureDetector(
@@ -64,55 +65,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   key: _key,
                   child: Column(
                     children: [
-                      Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.symmetric(vertical: 20),
-                              height: 150,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: greyColor.withOpacity(0.4)),
-                                  shape: BoxShape.circle,
-                                  color: greyColor.withOpacity(0.2)),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: pickedFile == null
-                                    ? Image.asset(
-                                        "asset/default_image.png",
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.file(
-                                        File(
-                                          pickedFile!.path,
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                              )),
-                          Positioned(
-                            right: 15,
-                            bottom: 20,
-                            child: GestureDetector(
-                              onTap: () {
-                                modalBottomSheet();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: blackColor.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  color: whiteColor,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      sizedBox(20),
+                      profileAvatar(pickedFile, () {
+                        modalBottomSheet();
+                      }),
+                      getHeight(20),
                       CustomTextFieldView(
                         capitalText: true,
                         onTap: () => unfocus(context),
@@ -134,7 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           ),
                         ),
                       ),
-                      sizedBox(15),
+                      getHeight(15),
                       CustomTextFieldView(
                         capitalText: true,
                         onTap: () {
@@ -150,8 +106,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           }
                         },
                       ),
-                      sizedBox(30),
-                      isLoading
+                      getHeight(30),
+                      provider.isLoading
                           ? showLoading()
                           : CustomButton(
                               btnName: "Save Profile",
@@ -159,18 +115,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                 unfocus(context);
                                 if (_key.currentState!.validate() &&
                                     pickedFile != null) {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
+                                  provider.loadingState(true);
+
                                   downloadUrl = await uploadImageOnDb(
                                       "profile_image", pickedFile);
                                   if (downloadUrl.isNotEmpty) {
                                     unfocus(context);
-                                    createUser();
+                                    createUser(
+                                        context,
+                                        nameController,
+                                        widget.phoneNumber,
+                                        descriptionController,
+                                        downloadUrl,
+                                        provider);
                                   } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
+                                    provider.loadingState(false);
                                   }
                                 }
                               },
@@ -237,45 +196,5 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         );
       },
     );
-  }
-
-  createUser() async {
-    try {
-      Map<String, dynamic> bodyData = {
-        "Name": nameController.text,
-        "Number": widget.phoneNumber,
-        "Description": descriptionController.text,
-        "UserId": auth.currentUser!.uid,
-        "ProfileImage": downloadUrl.isEmpty ? "" : downloadUrl,
-        "CreatedOn": DateTime.now().toIso8601String(),
-      };
-
-      await database
-          .ref("users/${auth.currentUser!.uid}")
-          .set(bodyData)
-          .then((value) async {
-        if (mounted) {
-          sharedPrefs!.setBool("isLogin", true);
-
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Register Success")));
-          pushToAndRemove(
-              context,
-              HomeTabBar(
-                currentIndex: 1,
-              ));
-          setState(() {
-            isLoading = false;
-          });
-        } else {
-          print("Not Mounted");
-          setState(() {
-            isLoading = false;
-          });
-        }
-      });
-    } catch (e) {
-      print(e.toString());
-    }
   }
 }

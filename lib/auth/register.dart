@@ -1,10 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/auth/verifyotp.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../styles/stylesheet.dart';
 import '../styles/textTheme.dart';
+import '../widget/custom_app_text.dart';
+import '../widget/custom_image.dart';
 import '../widget/custom_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -16,13 +21,12 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final numberController = TextEditingController();
-  FirebaseAuth auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
-  bool isLoading = false;
   String otpCode = "";
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<GetterSetterModel>(context);
     return Scaffold(
       backgroundColor: whiteColor,
       body: SingleChildScrollView(
@@ -33,27 +37,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 18.0),
               child: Column(
                 children: [
-                  sizedBox(30),
+                  getHeight(30),
                   Container(
-                      height: 300,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image:
-                                  AssetImage("asset/register/register.png")))),
-                  sizedBox(20),
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(registerImage),
+                      ),
+                    ),
+                  ),
+                  getHeight(20),
                   Text("Enter your phone number",
                       textAlign: TextAlign.center,
                       style: TextThemeProvider.heading1.copyWith(fontSize: 22)),
-                  sizedBox(10),
+                  getHeight(10),
                   Text(
-                    "Whatsapp will need to verify your phone number.",
+                    registerScreenDescription,
                     textAlign: TextAlign.center,
                     style: TextThemeProvider.bodyText
                         .copyWith(fontSize: 15, color: greyColor.shade400),
                   ),
-                  const SizedBox(
-                    height: 40,
+                  getHeight(
+                    40,
                   ),
                   Row(
                     children: [
@@ -64,9 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           readOnly: true,
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+                      getWidth(10),
                       Flexible(
                         flex: 4,
                         child: CustomTextFieldView(
@@ -89,16 +93,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
-                  sizedBox(10),
+                  getHeight(10),
                   Text(
                     "Carrier charges may apply.",
                     style: TextThemeProvider.bodyTextSecondary
                         .copyWith(color: greyColor.shade400),
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  isLoading
+                  getHeight(30),
+                  provider.isLoading
                       ? showLoading()
                       : CustomButton(
                           btnName: "Next",
@@ -109,9 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               FocusScope.of(context).unfocus();
                             }
                           }),
-                  const SizedBox(
-                    height: 60,
-                  ),
+                  getHeight(60),
                 ],
               ),
             ),
@@ -122,48 +122,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
 // This function use in send to verification code in Mobile number.
+
   createUser() async {
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
     try {
-      setState(() {
-        isLoading = true;
-      });
+      provider.loadingState(true);
+      await auth
+          .verifyPhoneNumber(
+              phoneNumber: "+91 ${numberController.text}",
+              verificationCompleted: (verificationCompleted) {
+                provider.loadingState(false);
+              },
+              verificationFailed: (verificationFailed) {
+                provider.loadingState(false);
+              },
+              codeSent: (codeSent, i) {
+                setState(() {
+                  otpCode = codeSent;
+                });
+                provider.loadingState(false);
 
-      await auth.verifyPhoneNumber(
-          phoneNumber: "+91 ${numberController.text}",
-          verificationCompleted: (verificationCompleted) {
-            setState(() {
-              isLoading = false;
-            });
-          },
-          verificationFailed: (verificationFailed) {
-            setState(() {
-              isLoading = false;
-            });
-          },
-          codeSent: (codeSent, i) {
-            setState(() {
-              otpCode = codeSent;
-              setState(() {
-                isLoading = false;
-              });
-            });
+                pushTo(
+                  context,
+                  VerifyOTP(
+                      phoneNumber: numberController.text.trim(),
+                      otpCode: otpCode),
+                );
 
-            pushTo(
-              context,
-              VerifyOTP(
-                  phoneNumber: numberController.text.trim(), otpCode: otpCode),
-            );
-
-            setState(() {
-              isLoading = false;
-            });
-          },
-          codeAutoRetrievalTimeout: (codeAutoRetrievalTimeout) {});
+                provider.loadingState(false);
+              },
+              codeAutoRetrievalTimeout: (codeAutoRetrievalTimeout) {})
+          .then((value) {});
     } catch (e) {
       print(e.toString());
-      setState(() {
-        isLoading = false;
-      });
+      provider.loadingState(false);
     }
   }
 }

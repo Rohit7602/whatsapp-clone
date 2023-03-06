@@ -1,15 +1,14 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
-import 'package:whatsapp_clone/auth/user_profile.dart';
-import 'package:whatsapp_clone/database/event_listner.dart';
-import 'package:whatsapp_clone/main.dart';
+import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/styles/textTheme.dart';
-import 'package:whatsapp_clone/tab_bar/tab_bar.dart';
+import 'package:whatsapp_clone/widget/custom_app_text.dart';
+import '../functions/verify_otp_fun.dart';
 import '../styles/stylesheet.dart';
+import '../widget/custom_image.dart';
 import '../widget/custom_widget.dart';
 
 class VerifyOTP extends StatefulWidget {
@@ -35,12 +34,12 @@ class _VerifyOTPState extends State<VerifyOTP> {
     super.dispose();
   }
 
-  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    const focusedBorderColor = Color.fromRGBO(23, 171, 144, 1);
+    var provider = Provider.of<GetterSetterModel>(context);
+    const focusedBorderColor = primaryColor;
     const fillColor = Color.fromRGBO(243, 246, 249, 0);
-    const borderColor = Color.fromRGBO(23, 171, 144, 0.4);
+    const borderColor = primaryColor;
 
     final defaultPinTheme = PinTheme(
       width: 56,
@@ -67,21 +66,19 @@ class _VerifyOTPState extends State<VerifyOTP> {
                       height: 250,
                       width: MediaQuery.of(context).size.width,
                       decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  "asset/register/verify_otp.jpg")))),
-                  sizedBox(20),
+                          image:
+                              DecorationImage(image: AssetImage(loginImage)))),
+                  getHeight(20),
                   Text("Verifying your number",
                       textAlign: TextAlign.center,
                       style: TextThemeProvider.heading1
                           .copyWith(fontSize: 22, color: blackColor)),
-                  sizedBox(30),
-                  Text(
-                      "Can't send and SMS with your code because you've tried to register +91 ${widget.phoneNumber} recently.",
+                  getHeight(30),
+                  Text("$verifyOTPDescription ${widget.phoneNumber} recently.",
                       textAlign: TextAlign.center,
                       style: TextThemeProvider.bodyText
                           .copyWith(color: greyColor.shade400, fontSize: 15)),
-                  sizedBox(5),
+                  getHeight(5),
                   Text("Request a call or wait before requesting an SMS.",
                       textAlign: TextAlign.center,
                       style: TextThemeProvider.bodyText
@@ -93,7 +90,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
                         style: TextThemeProvider.bodyTextSmall
                             .copyWith(color: primaryColor),
                       )),
-                  sizedBox(20),
+                  getHeight(20),
                   Pinput(
                     length: 6,
                     autofocus: true,
@@ -115,7 +112,8 @@ class _VerifyOTPState extends State<VerifyOTP> {
                       if (value.length == 6) {
                         FocusScope.of(context).unfocus();
                         if (_key.currentState!.validate()) {
-                          verifyOtp();
+                          verifyOtp(context, widget.otpCode, pinController,
+                              widget.phoneNumber, provider);
                         }
                       }
                     },
@@ -148,20 +146,14 @@ class _VerifyOTPState extends State<VerifyOTP> {
                       border: Border.all(color: Colors.redAccent),
                     ),
                   ),
-                  sizedBox(15),
+                  getHeight(15),
                   Text(
                     "Enter 6 Digit OTP",
                     style: TextThemeProvider.bodyTextSmall
                         .copyWith(color: greyColor),
                   ),
-                  sizedBox(15),
-                  isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(
-                            color: lightGreenColor,
-                          ),
-                        )
-                      : const SizedBox(),
+                  getHeight(15),
+                  provider.isLoading ? showLoading() : const SizedBox(),
                 ],
               ),
             ),
@@ -169,40 +161,5 @@ class _VerifyOTPState extends State<VerifyOTP> {
         ),
       ),
     );
-  }
-
-  verifyOtp() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      var credential = PhoneAuthProvider.credential(
-          verificationId: widget.otpCode, smsCode: pinController.text);
-
-      var authUser = await auth.signInWithCredential(credential);
-
-      if (authUser.user!.phoneNumber!.isNotEmpty) {
-        var userPath = await database.ref("users").get();
-        var getUserKey = userPath.children
-            .any((element) => element.key.toString() == auth.currentUser!.uid);
-
-        if (getUserKey == true) {
-          sharedPrefs!.setBool("isLogin", true);
-          pushTo(context, HomeTabBar(currentIndex: 1));
-        } else {
-          pushTo(context, UserProfileScreen(phoneNumber: widget.phoneNumber));
-          setState(() {
-            isLoading = false;
-          });
-        }
-      }
-    } catch (e) {
-      print(e.toString());
-
-      setState(() {
-        isLoading = false;
-        pinController.clear();
-      });
-    }
   }
 }

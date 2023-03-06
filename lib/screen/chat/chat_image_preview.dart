@@ -1,9 +1,8 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/screen/chat/chat_room.dart';
-import 'package:whatsapp_clone/tab_bar/tab_bar.dart';
 import '../../styles/stylesheet.dart';
 import '../../styles/textTheme.dart';
 import '../../widget/custom_appbar.dart';
@@ -106,7 +105,6 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
                   getCaptionController = captionController;
                 });
 
-                pushTo(context, HomeTabBar(currentIndex: 1));
                 // if (captionController.text.isEmpty) {
                 //   setState(() {
                 //     isLoading = true;
@@ -170,5 +168,6 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
   //   setState(() {
   //     isLoading = false;
   //   });
+  //   popView(context);
   // }
 }
