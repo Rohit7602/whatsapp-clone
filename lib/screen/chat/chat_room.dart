@@ -1,27 +1,17 @@
-// ignore_for_file: library_private_types_in_public_api, must_be_immutable, use_build_context_synchronously, avoid_print
+// ignore_for_file: must_be_immutable, library_private_types_in_public_api
 
 import 'dart:io';
-import 'package:clipboard/clipboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/components/chat_message_field.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/model/message_model.dart';
 import 'package:whatsapp_clone/screen/chat/show_chats.dart';
-import 'package:whatsapp_clone/styles/stylesheet.dart';
 import 'package:whatsapp_clone/widget/custom_appbar.dart';
 import 'package:whatsapp_clone/widget/custom_image.dart';
 import 'package:whatsapp_clone/widget/custom_widget.dart';
-import 'package:whatsapp_clone/widget/upload_image_db.dart';
 import '../../database_event/chat_event.dart';
-import '../../model/target_user_model.dart';
 import '../../styles/textTheme.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-
-import '../../widget/create_chatroom.dart';
 
 File? getFutureImage;
 TextEditingController? getCaptionController;

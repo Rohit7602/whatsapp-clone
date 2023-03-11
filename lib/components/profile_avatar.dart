@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import '../styles/stylesheet.dart';
 import '../widget/custom_image.dart';
 
-Stack profileAvatar(pickedFile, onTap) {
+Stack profileAvatar(File? pickedFile, onTap) {
   return Stack(
     alignment: Alignment.bottomRight,
     children: [
@@ -28,7 +28,7 @@ Stack profileAvatar(pickedFile, onTap) {
                 )
               : Image.file(
                   File(
-                    pickedFile!.path,
+                    pickedFile.path,
                   ),
                   fit: BoxFit.cover,
                 ),

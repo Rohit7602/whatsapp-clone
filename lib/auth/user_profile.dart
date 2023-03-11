@@ -65,7 +65,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   key: _key,
                   child: Column(
                     children: [
-                      profileAvatar(pickedFile, () {
+                      profileAvatar(pickedFile!, () {
                         modalBottomSheet();
                       }),
                       getHeight(20),

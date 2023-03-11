@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print, sized_box_for_whitespace
 
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/components/profile_avatar.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/model/user_model.dart';
 import 'package:whatsapp_clone/styles/textTheme.dart';
@@ -14,6 +15,7 @@ import 'package:whatsapp_clone/widget/custom_appbar.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/custom_instance.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
+import '../../components/profile_image_dialog.dart';
 import '../../styles/stylesheet.dart';
 import '../../widget/custom_widget.dart';
 import '../../widget/upload_image_db.dart';
@@ -33,67 +35,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     var userdata = Provider.of<GetterSetterModel>(context);
     return Scaffold(
-      appBar: customAppBar(title: "Profile"),
+      appBar: customAppBar(title: const Text("Profile")),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                height: 150,
-                width: 150,
-                decoration: BoxDecoration(
-                    border: Border.all(color: greyColor.withOpacity(0.4)),
-                    shape: BoxShape.circle,
-                    color: greyColor.withOpacity(0.2)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: userdata.userModel.profileImage.isEmpty
-                      ? Image.asset(
-                          "asset/default_image.png",
-                          fit: BoxFit.cover,
-                        )
-                      : Image.network(
-                          userdata.userModel.profileImage,
-                          fit: BoxFit.cover,
-                        ),
-                ),
-              ),
-              Positioned(
-                right: 15,
-                bottom: 20,
-                child: GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(18),
-                              topRight: Radius.circular(18))),
-                      context: context,
-                      builder: (_) {
-                        return ProfileImageBottomSheet(
-                          profileUrl: userdata.userModel.profileImage,
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.7),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      color: whiteColor,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          profileAvatar(pickedFile, () {
+            showModalBottomSheet(
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(18),
+                      topRight: Radius.circular(18))),
+              context: context,
+              builder: (_) {
+                return ProfileImageBottomSheet(
+                  profileUrl: userdata.userModel.profileImage,
+                );
+              },
+            );
+          }),
           ListTile(
             leading: const Icon(Icons.person_2),
             title: Text(
@@ -307,116 +266,6 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
   }
 }
 
-class ImageDialog extends StatefulWidget {
-  String profileUrl;
-  File? imageFile;
-  ImageDialog({required this.profileUrl, required this.imageFile, super.key});
-
-  @override
-  State<ImageDialog> createState() => _ImageDialogState();
-}
-
-class _ImageDialogState extends State<ImageDialog> {
-  final auth = FirebaseAuth.instance;
-  bool isLoading = false;
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: 300,
-            child: Image.file(
-              File(widget.imageFile!.path),
-              fit: BoxFit.cover,
-            ),
-          ),
-          getHeight(30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Flexible(
-                  flex: 3,
-                  child: IconButton(
-                      onPressed: () {
-                        widget.profileUrl = "";
-                        popView(context);
-                      },
-                      icon: const Icon(Icons.close))),
-              Flexible(
-                flex: 1,
-                child: getWidth(
-                  10,
-                ),
-              ),
-              Flexible(
-                flex: 3,
-                child: isLoading
-                    ? showLoading()
-                    : IconButton(
-                        onPressed: () async {
-                          if (widget.imageFile!.path.isNotEmpty) {
-                            setState(() {
-                              isLoading = true;
-                            });
-
-                            FirebaseStorage storage = FirebaseStorage.instance;
-
-                            await storage
-                                .refFromURL(widget.profileUrl)
-                                .delete()
-                                .then((value) async {
-                              var downloadUrl = await uploadImageOnDb(
-                                  "profile_image", widget.imageFile);
-
-                              if (downloadUrl != null) {
-                                var userProvider =
-                                    Provider.of<GetterSetterModel>(context,
-                                        listen: false);
-                                await database
-                                    .ref("users/${auth.currentUser!.uid}")
-                                    .update({"ProfileImage": downloadUrl});
-
-                                var pathUser = await database
-                                    .ref("users/${auth.currentUser!.uid}")
-                                    .get();
-
-                                var fetchData = UserModel.fromJson(
-                                    pathUser.value as Map<Object?, Object?>,
-                                    pathUser.key.toString());
-
-                                userProvider.getUserModel(fetchData);
-                                setState(() {
-                                  isLoading = false;
-                                  widget.imageFile == null;
-                                });
-
-                                popView(context);
-                              } else {
-                                print("Download url is empty");
-                              }
-                            });
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Please enter name")));
-                            setState(() {
-                              isLoading = false;
-                            });
-                          }
-                        },
-                        icon: const Icon(Icons.check),
-                      ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class NameModalBottomSheet extends StatefulWidget {
   String userName;
   TextEditingController controller;
@@ -611,3 +460,63 @@ class _DescriptionModalBottomSheetState
     );
   }
 }
+
+
+
+ // Stack(
+          //   alignment: Alignment.bottomRight,
+          //   children: [
+          //     Container(
+          //       margin: const EdgeInsets.symmetric(vertical: 20),
+          //       height: 150,
+          //       width: 150,
+          //       decoration: BoxDecoration(
+          //           border: Border.all(color: greyColor.withOpacity(0.4)),
+          //           shape: BoxShape.circle,
+          //           color: greyColor.withOpacity(0.2)),
+          //       child: ClipRRect(
+          //         borderRadius: BorderRadius.circular(100),
+          //         child: userdata.userModel.profileImage.isEmpty
+          //             ? Image.asset(
+          //                 "asset/default_image.png",
+          //                 fit: BoxFit.cover,
+          //               )
+          //             : Image.network(
+          //                 userdata.userModel.profileImage,
+          //                 fit: BoxFit.cover,
+          //               ),
+          //       ),
+          //     ),
+          //     Positioned(
+          //       right: 15,
+          //       bottom: 20,
+          //       child: GestureDetector(
+          //         onTap: () {
+          //           showModalBottomSheet(
+          //             shape: const RoundedRectangleBorder(
+          //                 borderRadius: BorderRadius.only(
+          //                     topLeft: Radius.circular(18),
+          //                     topRight: Radius.circular(18))),
+          //             context: context,
+          //             builder: (_) {
+          //               return ProfileImageBottomSheet(
+          //                 profileUrl: userdata.userModel.profileImage,
+          //               );
+          //             },
+          //           );
+          //         },
+          //         child: Container(
+          //           padding: const EdgeInsets.all(8),
+          //           decoration: BoxDecoration(
+          //             color: primaryColor.withOpacity(0.7),
+          //             shape: BoxShape.circle,
+          //           ),
+          //           child: const Icon(
+          //             Icons.camera_alt,
+          //             color: whiteColor,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
