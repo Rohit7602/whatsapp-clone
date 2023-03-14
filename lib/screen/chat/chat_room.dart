@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/screen/chat/show_chats.dart';
-import 'package:whatsapp_clone/widget/custom_appbar.dart';
-import 'package:whatsapp_clone/widget/custom_image.dart';
-import 'package:whatsapp_clone/widget/custom_widget.dart';
 import '../../database_event/chat_event.dart';
-import '../../styles/textTheme.dart';
+import '../../function/custom_appbar.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/styles/app_style_sheet.dart';
 
 File? getFutureImage;
 TextEditingController? getCaptionController;
@@ -92,7 +91,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => unfocus(context),
+      onTap: () => AppServices.keyboardUnfocus(context),
       child: WillPopScope(
         onWillPop: () {
           if (showEmoji) {
@@ -109,11 +108,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               title: Column(
                 children: [
                   const Text("Rohit"),
-                  getHeight(2),
+                  AppServices.addHeight(2),
                   Consumer<GetterSetterModel>(
                     builder: (context, data, child) {
                       return Text(data.getUserStatus,
-                          style: TextThemeProvider.helperText);
+                          style: GetTextTheme.sf10_medium);
                     },
                   ),
                 ],
@@ -138,7 +137,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 child: Image.asset(
-                  whatsappBG,
+                  AppImages.whatsappBG,
                   fit: BoxFit.cover,
                 ),
               ),

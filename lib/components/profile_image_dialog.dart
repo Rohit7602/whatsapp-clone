@@ -3,11 +3,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/components/show_loading.dart';
+import 'package:whatsapp_clone/components/upload_image_db.dart';
+import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../getter_setter/getter_setter.dart';
+import '../helper/global_function.dart';
 import '../model/user_model.dart';
-import '../widget/custom_instance.dart';
-import '../widget/custom_widget.dart';
-import '../widget/upload_image_db.dart';
 
 class ImageDialog extends StatefulWidget {
   String profileUrl;
@@ -33,7 +34,7 @@ class _ImageDialogState extends State<ImageDialog> {
               fit: BoxFit.cover,
             ),
           ),
-          getHeight(30),
+          AppServices.addHeight(30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -42,14 +43,14 @@ class _ImageDialogState extends State<ImageDialog> {
                 child: IconButton(
                   onPressed: () {
                     widget.profileUrl = "";
-                    popView(context);
+                    AppServices.popView(context);
                   },
                   icon: const Icon(Icons.close),
                 ),
               ),
               Flexible(
                 flex: 1,
-                child: getWidth(
+                child: AppServices.addWidth(
                   10,
                 ),
               ),
@@ -108,7 +109,7 @@ class _ImageDialogState extends State<ImageDialog> {
             widget.imageFile == null;
           });
 
-          popView(context);
+          AppServices.popView(context);
         } else {
           print("Download url is empty");
         }

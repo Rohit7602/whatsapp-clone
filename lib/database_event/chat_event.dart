@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 
+import '../helper/global_function.dart';
 import '../model/message_model.dart';
 import '../widget/create_chatroom.dart';
-import '../widget/custom_instance.dart';
 
 class ChatEventListner {
   BuildContext context;

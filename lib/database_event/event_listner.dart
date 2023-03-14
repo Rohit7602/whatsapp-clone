@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/model/message_model.dart';
 import '../getter_setter/getter_setter.dart';
+import '../helper/global_function.dart';
 import '../model/target_user_model.dart';
 import '../model/user_model.dart';
-import '../widget/custom_instance.dart';
 
 class DatabaseEventListner {
   BuildContext context;

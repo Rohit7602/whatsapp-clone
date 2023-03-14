@@ -3,9 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/styles/stylesheet.dart';
-import 'package:whatsapp_clone/widget/custom_widget.dart';
-import '../../styles/textTheme.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/styles/app_style_sheet.dart';
 import '../chat/chat_room.dart';
 
 class ContactScreen extends StatefulWidget {
@@ -25,20 +24,12 @@ class _ContactScreenState extends State<ContactScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: primaryColor,
+        backgroundColor: AppColors.primaryColor,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Contact Screen",
-              style: TextThemeProvider.heading2
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "100 contacts",
-              style: TextThemeProvider.bodyTextSecondary
-                  .copyWith(fontWeight: FontWeight.w400),
-            ),
+            Text("Contact Screen", style: GetTextTheme.sf18_medium),
+            Text("100 contacts", style: GetTextTheme.sf12_medium),
           ],
         ),
         actions: [
@@ -51,29 +42,30 @@ class _ContactScreenState extends State<ContactScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            getHeight(10),
+            AppServices.addHeight(10),
             ListTile(
               leading: Container(
                   height: 50,
                   width: 50,
                   decoration: const BoxDecoration(
-                      shape: BoxShape.circle, color: lightGreenColor),
+                      shape: BoxShape.circle, color: AppColors.lightGreenColor),
                   child: const Icon(
                     Icons.group,
-                    color: whiteColor,
+                    color: AppColors.whiteColor,
                     size: 35,
                   )),
               title: Text(
                 "New Group",
-                style: TextThemeProvider.bodyTextSmall,
+                style: GetTextTheme.sf14_regular,
               ),
             ),
-            getHeight(10),
+            AppServices.addHeight(10),
             Text(
               "All Contacts",
-              style: TextThemeProvider.bodyTextSmall.copyWith(color: greyColor),
+              style: GetTextTheme.sf14_regular
+                  .copyWith(color: AppColors.greyColor),
             ),
-            getHeight(10),
+            AppServices.addHeight(10),
             userList.getAllUser.isEmpty
                 ? const Text("You Don't have any contacts")
                 : ListView.builder(
@@ -82,7 +74,7 @@ class _ContactScreenState extends State<ContactScreen> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         onTap: () {
-                          pushTo(
+                          AppServices.pushTo(
                               context,
                               ChatRoomScreen(
                                   targetUser:
@@ -92,11 +84,12 @@ class _ContactScreenState extends State<ContactScreen> {
                           height: 50,
                           width: 50,
                           decoration: const BoxDecoration(
-                              shape: BoxShape.circle, color: lightGreyColor),
+                              shape: BoxShape.circle,
+                              color: AppColors.lightGreyColor),
                           child: userList.getAllUser[index].profileImage == ""
                               ? const Icon(
                                   Icons.person,
-                                  color: whiteColor,
+                                  color: AppColors.whiteColor,
                                   size: 40,
                                 )
                               : ClipRRect(
@@ -109,12 +102,12 @@ class _ContactScreenState extends State<ContactScreen> {
                         ),
                         title: Text(
                           userList.getAllUser[index].number,
-                          style: TextThemeProvider.bodyTextSmall,
+                          style: GetTextTheme.sf14_regular,
                         ),
                         subtitle: Text(
                           userList.getAllUser[index].description,
-                          style: TextThemeProvider.bodyTextSecondary
-                              .copyWith(color: greyColor, fontSize: 12),
+                          style: GetTextTheme.sf12_medium
+                              .copyWith(color: AppColors.greyColor),
                         ),
                       );
                     },

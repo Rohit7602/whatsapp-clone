@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/styles/stylesheet.dart';
+import '../../helper/styles/app_style_sheet.dart';
 
-customAppBar(
+AppBar customAppBar(
     {required dynamic title,
     dynamic leading,
     dynamic action,
-    Color color = primaryColor,
+    Color color = AppColors.primaryColor,
     bool autoLeading = true,
     bool centerTitle = false}) {
   return AppBar(

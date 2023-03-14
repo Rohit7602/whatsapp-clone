@@ -1,17 +1,16 @@
-import 'dart:io';
+// ignore_for_file: must_be_immutable
 
+import 'dart:io';
 import 'package:clipboard/clipboard.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../components/chat_message_field.dart';
+import '../../components/show_loading.dart';
 import '../../getter_setter/getter_setter.dart';
-import '../../styles/stylesheet.dart';
-import '../../styles/textTheme.dart';
-import '../../widget/custom_instance.dart';
-import '../../widget/custom_widget.dart';
+import '../../helper/global_function.dart';
+import '../../helper/styles/app_style_sheet.dart';
 
 class ShowChatOnScreen extends StatefulWidget {
   bool showEmoji;
@@ -78,8 +77,8 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                     decoration: BoxDecoration(
                       color:
                           messageList[index].senderId == auth.currentUser!.uid
-                              ? chatTileColor
-                              : whiteColor,
+                              ? AppColors.chatTileColor
+                              : AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(10).copyWith(
                         bottomRight:
                             messageList[index].senderId == auth.currentUser!.uid
@@ -101,14 +100,8 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                               onLongPress: () => FlutterClipboard.copy(
                                   messageList[index].message),
                               child: messageList[index].messageType == "text"
-                                  ? Text(
-                                      messageList[index].message,
-                                      style: TextThemeProvider.bodyTextSecondary
-                                          .copyWith(
-                                              color: blackColor,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500),
-                                    )
+                                  ? Text(messageList[index].message,
+                                      style: GetTextTheme.sf14_medium)
                                   : messageList[index].messageType == "image"
                                       ? Column(
                                           children: [
@@ -135,11 +128,12 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                               children: [
                                                 Text(
                                                   dateTime,
-                                                  style: TextThemeProvider
-                                                      .helperText
+                                                  style: GetTextTheme
+                                                      .sf10_regular
                                                       .copyWith(
                                                           fontSize: 8,
-                                                          color: greyColor
+                                                          color: AppColors
+                                                              .greyColor
                                                               .shade800),
                                                 ),
                                                 messageList[index].senderId ==
@@ -147,12 +141,14 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                                     ? messageList[index].seen
                                                         ? const Icon(
                                                             Icons.done_all,
-                                                            color: primaryColor,
+                                                            color: AppColors
+                                                                .primaryColor,
                                                             size: 15,
                                                           )
                                                         : const Icon(
                                                             Icons.check,
-                                                            color: primaryColor,
+                                                            color: AppColors
+                                                                .primaryColor,
                                                             size: 15,
                                                           )
                                                     : const SizedBox(),
@@ -169,10 +165,9 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                 ? const SizedBox()
                                 : Text(
                                     dateTime,
-                                    style: TextThemeProvider.helperText
-                                        .copyWith(
-                                            fontSize: 8,
-                                            color: greyColor.shade800),
+                                    style: GetTextTheme.sf10_regular.copyWith(
+                                        fontSize: 8,
+                                        color: AppColors.greyColor.shade800),
                                   ),
                             const SizedBox(
                               width: 6,
@@ -184,12 +179,12 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                     ? messageList[index].seen
                                         ? const Icon(
                                             Icons.done_all,
-                                            color: primaryColor,
+                                            color: AppColors.primaryColor,
                                             size: 15,
                                           )
                                         : const Icon(
                                             Icons.check,
-                                            color: primaryColor,
+                                            color: AppColors.primaryColor,
                                             size: 15,
                                           )
                                     : const SizedBox(),

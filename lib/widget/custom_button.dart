@@ -1,6 +1,8 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/styles/stylesheet.dart';
+import '../helper/styles/app_style_sheet.dart';
 
 final auth = FirebaseAuth.instance;
 
@@ -11,7 +13,7 @@ class CustomButton extends StatelessWidget {
 
   CustomButton(
       {required this.btnName,
-      this.btnColor = primaryColor,
+      this.btnColor = AppColors.primaryColor,
       required this.onTap,
       super.key});
 
@@ -28,7 +30,7 @@ class CustomButton extends StatelessWidget {
       onPressed: () => onTap(),
       child: Text(
         btnName,
-        style: const TextStyle(color: whiteColor),
+        style: const TextStyle(color: AppColors.whiteColor),
       ),
     );
   }

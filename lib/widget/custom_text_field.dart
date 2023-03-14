@@ -1,5 +1,11 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/styles/stylesheet.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../helper/styles/app_style_sheet.dart';
+
+// get TextField Of the screen
 
 class CustomTextFieldView extends StatelessWidget {
   TextEditingController? controller;
@@ -17,6 +23,8 @@ class CustomTextFieldView extends StatelessWidget {
   Function? onTap;
   dynamic validator;
   Function(String)? onChange;
+  bool prefixIconEnable;
+  dynamic prefixIcon;
 
   CustomTextFieldView(
       {Key? key,
@@ -34,51 +42,71 @@ class CustomTextFieldView extends StatelessWidget {
       this.capitalText = true,
       this.onTap,
       this.validator,
-      this.onChange})
+      this.onChange,
+      this.prefixIconEnable = false,
+      this.prefixIcon})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: isDisabled ? blackColor.withOpacity(0.4) : whiteColor,
-          border: Border.all(color: primaryColor.withOpacity(0.6))),
-      child: TextFormField(
-        textCapitalization:
-            capitalText ? TextCapitalization.words : TextCapitalization.none,
-        maxLines: maxLines,
-        readOnly: readOnly,
-        keyboardType: numpad ? TextInputType.phone : TextInputType.text,
-        controller: controller,
-        validator: validator,
-        onChanged: onChange,
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
-          suffixIcon: suffixIconEnable
-              ? IconButton(
-                  onPressed: null,
-                  icon: suffixIcon,
-                  color: primaryColor,
-                )
-              : null,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          label: label == ""
-              ? null
-              : Text(" $label ",
-                  style: TextStyle(
-                      color: isDisabled
-                          ? blackColor.withOpacity(0.1)
-                          : blackColor)),
-          floatingLabelAlignment: FloatingLabelAlignment.start,
-          hintText: hint,
-          hintStyle: TextStyle(
-              color: isDisabled ? blackColor.withOpacity(0.1) : greyColor),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        label.isNotEmpty
+            ? Text(
+                label,
+                style: GetTextTheme.sf16_regular.copyWith(
+                  color: isDisabled
+                      ? AppColors.blackColor.withOpacity(0.1)
+                      : AppColors.greyColor,
+                ),
+              )
+            : const SizedBox(),
+        Container(
+          margin: EdgeInsets.only(top: 5.sp),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              color: AppColors.whiteColor,
+              border: Border.all(color: AppColors.primaryColor)),
+          child: TextFormField(
+            style: GetTextTheme.sf18_regular,
+            textCapitalization: capitalText
+                ? TextCapitalization.words
+                : TextCapitalization.none,
+            maxLines: maxLines,
+            readOnly: readOnly,
+            keyboardType: numpad ? TextInputType.phone : TextInputType.text,
+            controller: controller,
+            validator: validator,
+            onChanged: onChange,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(20.sp, 10.sp, 10.sp, 10.sp),
+              prefixIcon: prefixIconEnable
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [prefixIcon],
+                    )
+                  : null,
+              suffixIcon: suffixIconEnable
+                  ? IconButton(
+                      onPressed: null,
+                      icon: suffixIcon,
+                    )
+                  : null,
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              hintText: hint,
+              hintStyle: GetTextTheme.sf16_regular.copyWith(
+                  color: isDisabled
+                      ? AppColors.blackColor.withOpacity(0.1)
+                      : AppColors.greyColor),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

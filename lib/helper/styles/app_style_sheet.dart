@@ -6,12 +6,31 @@ import 'package:google_fonts/google_fonts.dart';
 
 // all the colors used in the app are stored in AppColors
 class AppColors {
-  static const Color blackColor = Colors.black;
-  static const Color whiteColor = Colors.white;
-  static const Color primary1 = Color(0xff0336FF);
-  static const Color purpleColor = Color(0xff655DBB);
-  static const Color primary2 = Color(0xffE384FF);
-  static const Color greenColor = Color(0xff00BF13);
+  static const primaryColor = Color(0xffb63336);
+  static const secondaryColor = Color(0xff202C33);
+  static const backgroundColor = Colors.white;
+  static const whiteColor = Colors.white;
+  static const lightGreyColor = Color(0xff627884);
+  static const greyColor = Colors.grey;
+  static const blackColor = Colors.black;
+  static const redColor = Colors.red;
+  static const blueColor = Colors.blue;
+  static const lightGreenColor = Color(0xff00A884);
+  static const darkGreenColor = Color(0xff005C4B);
+  static const chatTileColor = Color(0xfffff6c3);
+}
+
+// all the image used in the app are stored in AppImages
+
+class AppImages {
+  static const registerImage = "asset/register/register.png";
+  static const verifyOTPImage = "asset/register/verify_otp.jpg";
+  static const defaultImage = "asset/default_image.png";
+  static const chatGIF = "asset/homepage/chat.gif";
+  static const arrowGIF = "asset/homepage/arrow.gif";
+  static const startChat = "asset/homepage/start_chat.jpg";
+  static const whatsappBG = "asset/whatsapp_bg/whatsapp_bg.png";
+  static const appLogo = "asset/logo/logo.png";
 }
 
 // all the text themes used in the app are stored in GetTextTheme

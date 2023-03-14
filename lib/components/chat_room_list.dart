@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-
+import '../helper/base_getters.dart';
 import '../screen/chat/chat_room.dart';
-import '../styles/stylesheet.dart';
-import '../styles/textTheme.dart';
-import '../widget/custom_widget.dart';
+import '../helper/styles/app_style_sheet.dart';
 
 class ChatRoomList extends StatelessWidget {
   const ChatRoomList({super.key});
@@ -15,7 +13,7 @@ class ChatRoomList extends StatelessWidget {
   Widget build(BuildContext context) {
     var data = Provider.of<GetterSetterModel>(context);
     return ListView.separated(
-      separatorBuilder: (context, i) => getHeight(15),
+      separatorBuilder: (context, i) => AppServices.addHeight(15),
       shrinkWrap: true,
       itemCount: data.targetUserModel.length,
       itemBuilder: (context, i) {
@@ -29,7 +27,7 @@ class ChatRoomList extends StatelessWidget {
 
         return ListTile(
           onTap: () {
-            pushTo(
+            AppServices.pushTo(
                 context,
                 ChatRoomScreen(
                     targetUser: data.targetUserModel[i].userModel.userId));
@@ -38,7 +36,7 @@ class ChatRoomList extends StatelessWidget {
             height: 50,
             width: 50,
             decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: lightGreyColor),
+                shape: BoxShape.circle, color: AppColors.lightGreyColor),
             child: data.targetUserModel[i].userModel.profileImage.isNotEmpty
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(100),
@@ -50,7 +48,7 @@ class ChatRoomList extends StatelessWidget {
                 : const Icon(
                     Icons.person,
                     size: 35,
-                    color: whiteColor,
+                    color: AppColors.whiteColor,
                   ),
           ),
           title: Text(
@@ -61,12 +59,12 @@ class ChatRoomList extends StatelessWidget {
               data.targetUserModel[i].messageModel.seen
                   ? const Icon(
                       Icons.done_all,
-                      color: primaryColor,
+                      color: AppColors.primaryColor,
                       size: 15,
                     )
                   : const Icon(
                       Icons.check,
-                      color: primaryColor,
+                      color: AppColors.primaryColor,
                       size: 15,
                     ),
               const SizedBox(
@@ -84,8 +82,8 @@ class ChatRoomList extends StatelessWidget {
           ),
           trailing: Text(
             dateTime.toString(),
-            style: TextThemeProvider.bodyTextSecondary
-                .copyWith(color: greyColor, fontSize: 12),
+            style:
+                GetTextTheme.sf12_medium.copyWith(color: AppColors.greyColor),
           ),
         );
       },

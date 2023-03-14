@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GroupChatScreen extends StatelessWidget {
+  const GroupChatScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,9 +53,7 @@ class GroupChatScreen extends StatelessWidget {
                 const SizedBox(width: 8.0),
                 FloatingActionButton(
                   child: const Icon(Icons.send),
-                  onPressed: () {
-                    // TODO: Implement send message functionality
-                  },
+                  onPressed: () {},
                 ),
               ],
             ),

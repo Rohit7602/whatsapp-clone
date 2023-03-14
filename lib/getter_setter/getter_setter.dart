@@ -25,7 +25,7 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  List<UserModel> _getUserList = [];
+  final List<UserModel> _getUserList = [];
   List<UserModel> get getAllUser => _getUserList;
   getUsers(List<UserModel> users) {
     _getUserList.addAll(users);

@@ -1,29 +1,27 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../helper/styles/app_style_sheet.dart';
 
-import '../styles/stylesheet.dart';
-import '../widget/custom_image.dart';
-
-Stack profileAvatar(File? pickedFile, onTap) {
+Stack userProfileAvtar(File? pickedFile, onTap) {
   return Stack(
     alignment: Alignment.bottomRight,
     children: [
       Container(
-        margin: const EdgeInsets.symmetric(vertical: 20),
-        height: 150,
-        width: 150,
+        margin: EdgeInsets.symmetric(vertical: 20.h),
+        height: 150.h,
+        width: 150.w,
         decoration: BoxDecoration(
-            border: Border.all(color: greyColor.withOpacity(0.4)),
+            border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
             shape: BoxShape.circle,
-            color: greyColor.withOpacity(0.2)),
+            color: AppColors.greyColor.withOpacity(0.2)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(100),
           child: pickedFile == null
               ? Image.asset(
-                  defaultImage,
+                  AppImages.defaultImage,
                   fit: BoxFit.cover,
                 )
               : Image.file(
@@ -35,19 +33,19 @@ Stack profileAvatar(File? pickedFile, onTap) {
         ),
       ),
       Positioned(
-        right: 15,
-        bottom: 20,
+        right: 15.w,
+        bottom: 20.h,
         child: GestureDetector(
           onTap: () => onTap(),
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.7),
+              color: AppColors.primaryColor.withOpacity(0.7),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.camera_alt,
-              color: whiteColor,
+              color: AppColors.whiteColor,
             ),
           ),
         ),

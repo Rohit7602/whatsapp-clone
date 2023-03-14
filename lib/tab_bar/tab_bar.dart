@@ -1,25 +1,22 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:whatsapp_clone/auth/register.dart';
-import 'package:whatsapp_clone/database_event/event_listner.dart';
-import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/model/user_model.dart';
+import 'package:whatsapp_clone/app_config.dart';
+import 'package:whatsapp_clone/auth/register_view.dart';
 import 'package:whatsapp_clone/splash.dart';
+import '../function/little_Function/snackbar.dart';
+import '../function/little_Function/user_status.dart';
+import '../helper/base_getters.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
 import '../screen/home/homepage.dart';
 import '../screen/status/status.dart';
-import '../styles/stylesheet.dart';
-import '../styles/textTheme.dart';
-import '../widget/custom_instance.dart';
-import '../widget/custom_widget.dart';
+import '../helper/styles/app_style_sheet.dart';
 
 class HomeTabBar extends StatefulWidget {
   int currentIndex;
-  HomeTabBar({required this.currentIndex, super.key});
+  HomeTabBar({this.currentIndex = 1, super.key});
 
   @override
   State<HomeTabBar> createState() => _HomeTabBarState();
@@ -36,36 +33,24 @@ class _HomeTabBarState extends State<HomeTabBar>
     tabController = TabController(
         initialIndex: widget.currentIndex, vsync: this, length: 4);
     WidgetsBinding.instance.addObserver(this);
-    setStatus("online");
+    setUserStatus(context, "online");
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    tabController!.dispose();
-    super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      setStatus("online");
+      setUserStatus(context, "online");
     } else {
-      setStatus("offline");
+      setUserStatus(context, "offline");
     }
   }
 
-  void setStatus(String status) async {
-    var provider = Provider.of<GetterSetterModel>(context, listen: false);
-    database.ref("users/${auth.currentUser!.uid}").update({
-      "Status": status,
-    });
-
-    var userPath = await database.ref("users/${auth.currentUser!.uid}").get();
-    var userModel = UserModel.fromJson(
-        userPath.value as Map<Object?, Object?>, userPath.key.toString());
-    provider.getUserModel(userModel);
+  @override
+  void dispose() {
+    tabController!.dispose();
+    super.dispose();
   }
 
   @override
@@ -77,45 +62,40 @@ class _HomeTabBarState extends State<HomeTabBar>
         timeBackPressed = DateTime.now();
 
         if (isExistWarning) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Press back again to exist"),
-            ),
-          );
+          showSnackBar(context, "Press back again to exist");
           return false;
         } else {
           return true;
         }
       },
       child: Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: primaryColor,
+          backgroundColor: AppColors.primaryColor,
           automaticallyImplyLeading: false,
           toolbarHeight: 115,
           title: Column(
             children: [
-              getHeight(10),
+              AppServices.addHeight(10),
               Row(
                 children: [
                   Text(
-                    "Hex Chat",
-                    style: TextThemeProvider.heading1.copyWith(
-                        color: whiteColor,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20),
+                    AppConfig.appName,
+                    style: GetTextTheme.sf20_medium.copyWith(
+                      color: AppColors.whiteColor,
+                    ),
                   ),
                   const Spacer(),
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.camera_alt_outlined,
-                        color: whiteColor),
+                        color: AppColors.whiteColor),
                   ),
                   IconButton(
                     onPressed: () {
                       getNavigation("2");
                     },
-                    icon: const Icon(Icons.search, color: whiteColor),
+                    icon: const Icon(Icons.search, color: AppColors.whiteColor),
                   ),
                   IconButton(
                     onPressed: () async {
@@ -124,57 +104,57 @@ class _HomeTabBarState extends State<HomeTabBar>
                           await SharedPreferences.getInstance();
 
                       prefs.clear();
-                      pushToAndRemove(context, const RegisterScreen());
+                      AppServices.pushToAndRemove(
+                          context, const RegisterScreen());
                     },
-                    icon: const Icon(Icons.more_vert, color: whiteColor),
+                    icon: const Icon(Icons.more_vert,
+                        color: AppColors.whiteColor),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              TabBar(
-                labelStyle: TextThemeProvider.bodyTextSmall
-                    .copyWith(fontWeight: FontWeight.bold),
-                automaticIndicatorColorAdjustment: true,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorWeight: 4,
-                isScrollable: true,
-                labelColor: whiteColor,
-                indicatorColor: whiteColor,
-                unselectedLabelColor: whiteColor,
-                controller: tabController,
-                tabs: [
-                  Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: const Icon(Icons.groups)),
-                  Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: const Text("CHATS")),
-                  Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: const Text("STATUS")),
-                  Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: const Text("CALLS")),
-                ],
-              ),
+              AppTabBarView(),
             ],
           ),
         ),
         body: TabBarView(
           controller: tabController,
-          children: [
-            const GroupScreen(),
+          children: const [
+            GroupScreen(),
             HomePageScreen(),
-            const StatusScreen(),
-            const RecentCallsScreen()
+            StatusScreen(),
+            RecentCallsScreen()
           ],
         ),
       ),
     );
+  }
+
+  TabBar AppTabBarView() {
+    return TabBar(
+      labelStyle: GetTextTheme.sf14_bold,
+      automaticIndicatorColorAdjustment: true,
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicatorWeight: 4,
+      isScrollable: true,
+      labelColor: AppColors.whiteColor,
+      indicatorColor: AppColors.whiteColor,
+      unselectedLabelColor: AppColors.whiteColor,
+      controller: tabController,
+      tabs: [
+        TabsController(const Icon(Icons.groups)),
+        TabsController(const Text("CHATS")),
+        TabsController(const Text("STATUS")),
+        TabsController(const Text("CALLS")),
+      ],
+    );
+  }
+
+  Container TabsController(dynamic tabName) {
+    return Container(
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.only(bottom: 10),
+        child: tabName);
   }
 
   void showPopupMenu() async {
@@ -191,7 +171,7 @@ class _HomeTabBarState extends State<HomeTabBar>
         ),
         PopupMenuItem(
           onTap: () {
-            popView(context);
+            AppServices.popView(context);
             getNavigation("2");
           },
           value: "2",
@@ -213,11 +193,11 @@ class _HomeTabBarState extends State<HomeTabBar>
   getNavigation(String route) {
     switch (route) {
       case "1":
-        return pushTo(context, const SplashScreen());
+        return AppServices.pushTo(context, const SplashScreen());
       case "2":
-        return pushTo(context, const RegisterScreen());
+        return AppServices.pushTo(context, const RegisterScreen());
       case "3":
-        return pushTo(context, const SplashScreen());
+        return AppServices.pushTo(context, const SplashScreen());
 
       default:
         return null;

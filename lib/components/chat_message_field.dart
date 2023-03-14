@@ -1,13 +1,12 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/styles/textTheme.dart';
-import 'package:whatsapp_clone/widget/custom_widget.dart';
-
-import '../styles/stylesheet.dart';
+import 'package:whatsapp_clone/components/upload_image_db.dart';
+import 'package:whatsapp_clone/helper/base_getters.dart';
+import '../helper/global_function.dart';
+import '../helper/styles/app_style_sheet.dart';
 import '../widget/create_chatroom.dart';
-import '../widget/custom_instance.dart';
-import '../widget/upload_image_db.dart';
 
 class MessageTextField extends StatefulWidget {
   bool showEmoji;
@@ -48,10 +47,11 @@ class _MessageTextFieldState extends State<MessageTextField> {
             ),
             height: 45,
             decoration: BoxDecoration(
-                color: primaryColor, borderRadius: BorderRadius.circular(50)),
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(50)),
             child: TextFormField(
               onTap: () {
-                unfocus(context);
+                AppServices.keyboardUnfocus(context);
                 if (widget.showEmoji) {
                   setState(() => widget.showEmoji = !widget.showEmoji);
                 }
@@ -67,7 +67,8 @@ class _MessageTextFieldState extends State<MessageTextField> {
                   });
                 }
               },
-              style: TextThemeProvider.bodyText.copyWith(color: whiteColor),
+              style: GetTextTheme.sf16_regular
+                  .copyWith(color: AppColors.whiteColor),
               controller: widget.messageController,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -95,7 +96,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
                               },
                               child: const Icon(
                                 Icons.attach_file_outlined,
-                                color: whiteColor,
+                                color: AppColors.whiteColor,
                               ),
                             ),
                             const SizedBox(
@@ -103,27 +104,27 @@ class _MessageTextFieldState extends State<MessageTextField> {
                             ),
                             const Icon(
                               Icons.camera_alt,
-                              color: whiteColor,
+                              color: AppColors.whiteColor,
                             ),
                           ],
                         )
                       : const Icon(
                           Icons.attach_file_outlined,
-                          color: whiteColor,
+                          color: AppColors.whiteColor,
                         ),
                   prefixIcon: InkWell(
                     onTap: () {
-                      unfocus(context);
+                      AppServices.keyboardUnfocus(context);
                       setState(() => widget.showEmoji = !widget.showEmoji);
                     },
                     child: const Icon(
                       Icons.emoji_emotions,
-                      color: whiteColor,
+                      color: AppColors.whiteColor,
                     ),
                   ),
                   hintText: "Message",
-                  hintStyle: TextThemeProvider.bodyTextSmall
-                      .copyWith(color: whiteColor)),
+                  hintStyle: GetTextTheme.sf14_regular
+                      .copyWith(color: AppColors.whiteColor)),
             ),
           ),
         ),
@@ -140,16 +141,16 @@ class _MessageTextFieldState extends State<MessageTextField> {
             height: 40,
             width: 40,
             decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: primaryColor),
+                shape: BoxShape.circle, color: AppColors.primaryColor),
             child: widget.isFieldEmpty
                 ? const Icon(
                     Icons.keyboard_voice_rounded,
-                    color: whiteColor,
+                    color: AppColors.whiteColor,
                     size: 25,
                   )
                 : const Icon(
                     Icons.send,
-                    color: whiteColor,
+                    color: AppColors.whiteColor,
                     size: 25,
                   ),
           ),

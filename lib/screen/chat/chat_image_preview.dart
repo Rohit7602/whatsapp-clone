@@ -3,10 +3,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/screen/chat/chat_room.dart';
-import '../../styles/stylesheet.dart';
-import '../../styles/textTheme.dart';
-import '../../widget/custom_appbar.dart';
-import '../../widget/custom_widget.dart';
+import '../../function/custom_appbar.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/styles/app_style_sheet.dart';
 
 class ChatImagePreview extends StatefulWidget {
   String chatRoomId;
@@ -26,22 +25,22 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: blackColor,
+      backgroundColor: AppColors.blackColor,
       appBar: customAppBar(
         leading: IconButton(
             onPressed: () {
               widget.pickedFile = null;
-              popView(context);
+              AppServices.popView(context);
             },
             icon: const Icon(
               Icons.close,
-              color: whiteColor,
+              color: AppColors.whiteColor,
             )),
         title: "",
-        color: blackColor,
+        color: AppColors.blackColor,
         action: [IconButton(onPressed: () {}, icon: const Icon(Icons.crop))],
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height * 0.78,
         width: MediaQuery.of(context).size.width,
         child: Image.file(
@@ -68,11 +67,11 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
                 ),
                 height: 45,
                 decoration: BoxDecoration(
-                    color: lightGreyColor,
+                    color: AppColors.lightGreyColor,
                     borderRadius: BorderRadius.circular(50)),
                 child: TextFormField(
                   onTap: () {
-                    unfocus(context);
+                    AppServices.keyboardUnfocus(context);
                     if (showEmoji) {
                       setState(() => showEmoji = !showEmoji);
                     }
@@ -80,16 +79,17 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
                   onChanged: (v) {
                     if (v.isEmpty) {}
                   },
-                  style: TextThemeProvider.bodyText.copyWith(color: whiteColor),
+                  style: GetTextTheme.sf16_regular
+                      .copyWith(color: AppColors.whiteColor),
                   controller: captionController,
                   decoration: InputDecoration(
                     hintText: "Type a caption..",
-                    hintStyle: TextThemeProvider.bodyTextSmall
-                        .copyWith(color: greyColor.shade200),
+                    hintStyle: GetTextTheme.sf14_regular
+                        .copyWith(color: AppColors.greyColor.shade200),
                     border: InputBorder.none,
                     prefixIcon: Icon(
                       Icons.image,
-                      color: greyColor.shade200,
+                      color: AppColors.greyColor.shade200,
                     ),
                   ),
                 ),
@@ -131,14 +131,14 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
                 height: 50,
                 width: 50,
                 decoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: lightGreenColor),
+                    shape: BoxShape.circle, color: AppColors.lightGreenColor),
                 child: isLoading
                     ? const CircularProgressIndicator(
-                        color: whiteColor,
+                        color: AppColors.whiteColor,
                       )
                     : const Icon(
                         Icons.send,
-                        color: whiteColor,
+                        color: AppColors.whiteColor,
                         size: 25,
                       ),
               ),

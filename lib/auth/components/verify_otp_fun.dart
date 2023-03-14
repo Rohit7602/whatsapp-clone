@@ -3,11 +3,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import '../auth/user_profile.dart';
-import '../main.dart';
-import '../tab_bar/tab_bar.dart';
-import '../widget/custom_instance.dart';
-import '../widget/custom_widget.dart';
+
+import '../../helper/base_getters.dart';
+import '../../helper/global_function.dart';
+import '../../main.dart';
+import '../../tab_bar/tab_bar.dart';
+import '../user_profile_view.dart';
 
 verifyOtp(
     BuildContext context,
@@ -30,10 +31,11 @@ verifyOtp(
 
       if (getUserKey == true) {
         sharedPrefs!.setBool("isLogin", true);
-        pushTo(context, HomeTabBar(currentIndex: 1));
+        AppServices.pushTo(context, HomeTabBar());
         provider.loadingState(false);
       } else {
-        pushTo(context, UserProfileScreen(phoneNumber: phoneNumber));
+        AppServices.pushTo(
+            context, UserProfileScreen(phoneNumber: phoneNumber));
         provider.loadingState(false);
       }
     }

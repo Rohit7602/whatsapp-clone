@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../styles/textTheme.dart';
+import '../../helper/styles/app_style_sheet.dart';
 
 class CallScreen extends StatelessWidget {
+  const CallScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +30,7 @@ class CallScreen extends StatelessWidget {
           const SizedBox(height: 24.0),
           Text(
             'Call duration: 00:02:33',
-            style: TextThemeProvider.bodyText,
+            style: GetTextTheme.sf16_regular,
           ),
           const SizedBox(height: 24.0),
           Row(
@@ -37,20 +39,19 @@ class CallScreen extends StatelessWidget {
               FloatingActionButton(
                 child: const Icon(Icons.mic_off),
                 onPressed: () {
+                  // ignore: todo
                   // TODO: Implement mute functionality
                 },
               ),
               FloatingActionButton(
-                child: const Icon(Icons.call_end),
                 backgroundColor: Colors.red,
-                onPressed: () {
-                  // TODO: Implement end call functionality
-                },
+                onPressed: () {},
+                child: const Icon(Icons.call_end),
               ),
               FloatingActionButton(
                 child: const Icon(Icons.volume_up),
                 onPressed: () {
-                  // TODO: Implement speaker functionality
+ 
                 },
               ),
             ],

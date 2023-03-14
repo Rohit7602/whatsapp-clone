@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../styles/stylesheet.dart';
-import '../../widget/custom_widget.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/styles/app_style_sheet.dart';
 import 'group_chat.dart';
 
 class GroupScreen extends StatefulWidget {
@@ -14,13 +14,13 @@ class _GroupScreenState extends State<GroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColors.backgroundColor,
       body: ListView.builder(
           shrinkWrap: true,
           itemCount: 5,
           itemBuilder: (context, i) {
             return ListTile(
-              onTap: () => pushTo(context, GroupChatScreen()),
+              onTap: () => AppServices.pushTo(context, const GroupChatScreen()),
               title: const Text("Group Number 1"),
             );
           }),

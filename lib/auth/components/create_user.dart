@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import '../main.dart';
-import '../tab_bar/tab_bar.dart';
-import '../widget/custom_instance.dart';
-import '../widget/custom_widget.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/global_function.dart';
+import '../../main.dart';
+import '../../tab_bar/tab_bar.dart';
 
 createUser(
     BuildContext context,
@@ -32,11 +32,7 @@ createUser(
       sharedPrefs!.setBool("isLogin", true);
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Register Success")));
-      pushToAndRemove(
-          context,
-          HomeTabBar(
-            currentIndex: 1,
-          ));
+      AppServices.pushToAndRemove(context, HomeTabBar());
     }).then((value) {
       provider.loadingState(false);
     });

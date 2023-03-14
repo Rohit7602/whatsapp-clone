@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/styles/stylesheet.dart';
-import 'package:whatsapp_clone/styles/textTheme.dart';
-import 'package:whatsapp_clone/widget/custom_widget.dart';
+import 'package:whatsapp_clone/helper/styles/app_style_sheet.dart';
 
+import '../../helper/base_getters.dart';
 import 'call_screen.dart';
 
 class RecentCallsScreen extends StatelessWidget {
@@ -11,7 +10,7 @@ class RecentCallsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColors.backgroundColor,
       body: ListView.builder(
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
@@ -22,34 +21,34 @@ class RecentCallsScreen extends StatelessWidget {
             ),
             title: Text(
               'User $index',
-              style:
-                  TextThemeProvider.bodyTextSmall.copyWith(color: whiteColor),
+              style: GetTextTheme.sf14_regular
+                  .copyWith(color: AppColors.whiteColor),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Yesterday, 10:15 AM',
-                  style: TextThemeProvider.bodyTextSmall
-                      .copyWith(color: greyColor),
+                  style: GetTextTheme.sf14_regular
+                      .copyWith(color: AppColors.greyColor),
                 ),
                 Text(
                   'Outgoing',
-                  style: TextThemeProvider.bodyTextSmall
-                      .copyWith(color: greyColor),
+                  style: GetTextTheme.sf14_regular
+                      .copyWith(color: AppColors.greyColor),
                 ),
               ],
             ),
             trailing: const Icon(
               Icons.call,
-              color: whiteColor,
+              color: AppColors.whiteColor,
             ),
-            onTap: () => pushTo(context, CallScreen()),
+            onTap: () => AppServices.pushTo(context, const CallScreen()),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: lightGreenColor,
+        backgroundColor: AppColors.lightGreenColor,
         child: const Icon(Icons.add_call),
         onPressed: () {},
       ),

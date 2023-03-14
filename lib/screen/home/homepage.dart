@@ -1,14 +1,15 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/components/chat_room_list.dart';
 import 'package:whatsapp_clone/database_event/event_listner.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/screen/setting/profile_screen.dart';
-import 'package:whatsapp_clone/widget/custom_image.dart';
-import 'package:whatsapp_clone/widget/custom_widget.dart';
-import '../../styles/stylesheet.dart';
+import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/styles/app_style_sheet.dart';
 import '../contact/contact.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -32,57 +33,54 @@ class _HomePageScreenState extends State<HomePageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColors.backgroundColor,
       body: Container(
-        margin: const EdgeInsets.only(top: 15),
+        margin: EdgeInsets.only(top: 15.h),
         child: Consumer<GetterSetterModel>(
           builder: (context, data, chidl) {
             return data.targetUserModel.isEmpty
-                ? Container(
-                    margin: const EdgeInsets.only(top: 40),
-                    alignment: Alignment.center,
-                    height: 300,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage(startChat),
-                    )),
-                  )
+                ? CustomAssetImage(context, 300, AppImages.startChat,
+                    EdgeInsets.only(top: 60.h))
                 : const ChatRoomList();
           },
         ),
       ),
-      floatingActionButton: Consumer<GetterSetterModel>(
-        builder: (context, data, child) {
-          return data.targetUserModel.isEmpty
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Image.asset(
-                      chatGIF,
-                      height: 70,
-                    ),
-                    Image.asset(
-                      arrowGIF,
-                      height: 60,
-                    ),
-                    FloatingActionButton(
-                      backgroundColor: primaryColor,
-                      onPressed: () async {
-                        pushTo(context, const ContactScreen());
-                      },
-                      child: const Icon(Icons.chat),
-                    ),
-                  ],
-                )
-              : FloatingActionButton(
-                  backgroundColor: primaryColor,
-                  onPressed: () async {
-                    pushTo(context, const ProfileScreen());
-                  },
-                  child: const Icon(Icons.person),
-                );
-        },
-      ),
+      floatingActionButton: FloatingIconView(),
+    );
+  }
+
+  Consumer<GetterSetterModel> FloatingIconView() {
+    return Consumer<GetterSetterModel>(
+      builder: (context, data, child) {
+        return data.targetUserModel.isEmpty
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Image.asset(
+                    AppImages.chatGIF,
+                    height: 70.h,
+                  ),
+                  Image.asset(
+                    AppImages.arrowGIF,
+                    height: 60.h,
+                  ),
+                  FloatingActionButton(
+                    backgroundColor: AppColors.primaryColor,
+                    onPressed: () async {
+                      AppServices.pushTo(context, const ContactScreen());
+                    },
+                    child: const Icon(Icons.chat),
+                  ),
+                ],
+              )
+            : FloatingActionButton(
+                backgroundColor: AppColors.primaryColor,
+                onPressed: () async {
+                  AppServices.pushTo(context, const ProfileScreen());
+                },
+                child: const Icon(Icons.person),
+              );
+      },
     );
   }
 }

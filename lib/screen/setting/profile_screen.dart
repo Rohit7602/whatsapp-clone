@@ -3,22 +3,20 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/components/profile_avatar.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/model/user_model.dart';
-import 'package:whatsapp_clone/styles/textTheme.dart';
-import 'package:whatsapp_clone/widget/custom_appbar.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
-import 'package:whatsapp_clone/widget/custom_instance.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../../components/profile_image_dialog.dart';
-import '../../styles/stylesheet.dart';
-import '../../widget/custom_widget.dart';
-import '../../widget/upload_image_db.dart';
+import '../../components/show_loading.dart';
+import '../../components/upload_image_db.dart';
+import '../../function/custom_appbar.dart';
+import '../../helper/base_getters.dart';
+import '../../helper/global_function.dart';
+import '../../helper/styles/app_style_sheet.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          profileAvatar(pickedFile, () {
+          userProfileAvtar(pickedFile, () {
             showModalBottomSheet(
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -57,14 +55,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             leading: const Icon(Icons.person_2),
             title: Text(
               "Name",
-              style: TextThemeProvider.bodyTextSecondary
-                  .copyWith(color: greyColor),
+              style:
+                  GetTextTheme.sf12_medium.copyWith(color: AppColors.greyColor),
             ),
-            subtitle: Text(
-              userdata.userModel.name,
-              style: TextThemeProvider.bodyText
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
+            subtitle:
+                Text(userdata.userModel.name, style: GetTextTheme.sf16_medium),
             trailing: IconButton(
                 onPressed: () => showModalBottomSheet(
                     context: context,
@@ -76,35 +71,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }),
                 icon: const Icon(
                   Icons.edit,
-                  color: primaryColor,
+                  color: AppColors.primaryColor,
                 )),
           ),
           Container(
             padding: const EdgeInsets.only(left: 70),
             child: Text(
               "This is not your username or pin. This name will me visible to your Hex Chat contacts.",
-              style: TextThemeProvider.bodyTextSmall.copyWith(color: greyColor),
+              style: GetTextTheme.sf14_regular
+                  .copyWith(color: AppColors.greyColor),
             ),
           ),
           Container(
             padding: const EdgeInsets.only(left: 70),
             margin: const EdgeInsets.only(top: 15, bottom: 5),
             child: const Divider(
-              color: greyColor,
+              color: AppColors.greyColor,
             ),
           ),
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(
               "About",
-              style: TextThemeProvider.bodyTextSecondary
-                  .copyWith(color: greyColor),
+              style: GetTextTheme.sf12_regular
+                  .copyWith(color: AppColors.greyColor),
             ),
-            subtitle: Text(
-              userdata.userModel.description,
-              style: TextThemeProvider.bodyText
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
+            subtitle: Text(userdata.userModel.description,
+                style: GetTextTheme.sf26_medium),
             trailing: IconButton(
                 onPressed: () => showModalBottomSheet(
                     context: context,
@@ -116,35 +109,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }),
                 icon: const Icon(
                   Icons.edit,
-                  color: primaryColor,
+                  color: AppColors.primaryColor,
                 )),
           ),
           Container(
             padding: const EdgeInsets.only(left: 70),
             margin: const EdgeInsets.symmetric(vertical: 5),
             child: const Divider(
-              color: greyColor,
+              color: AppColors.greyColor,
             ),
           ),
           ListTile(
             leading: const Icon(Icons.phone),
             title: Text(
               "Phone",
-              style: TextThemeProvider.bodyTextSecondary
-                  .copyWith(color: greyColor),
+              style:
+                  GetTextTheme.sf12_medium.copyWith(color: AppColors.greyColor),
             ),
-            subtitle: Text(
-              "+91 ${userdata.userModel.number}",
-              style: TextThemeProvider.bodyText
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
+            subtitle: Text("+91 ${userdata.userModel.number}",
+                style: GetTextTheme.sf12_medium),
           ),
-          getHeight(30),
-          Text(
-            "Powered by Hex Chat",
-            style:
-                TextThemeProvider.bodyTextSecondary.copyWith(color: greyColor),
-          )
+          AppServices.addHeight(30),
+          Text("Powered by Hex Chat", style: GetTextTheme.sf12_medium)
         ],
       ),
     );
@@ -173,16 +159,17 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
         children: [
           Text(
             "Profile Photo",
-            style: TextThemeProvider.heading2.copyWith(color: greyColor),
+            style:
+                GetTextTheme.sf18_medium.copyWith(color: AppColors.greyColor),
           ),
-          getHeight(25),
+          AppServices.addHeight(25),
           Row(
             children: [
               Column(
                 children: [
                   InkWell(
                     onTap: () async {
-                      popView(context);
+                      AppServices.popView(context);
                       pickedFile = await pickImageWithCamera();
 
                       showDialog(
@@ -200,22 +187,18 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                       width: 60,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: greyColor.shade300, width: 1)),
+                          border: Border.all(
+                              color: AppColors.greyColor.shade300, width: 1)),
                       child: const Icon(
                         Icons.camera_alt_rounded,
-                        color: primaryColor,
+                        color: AppColors.primaryColor,
                       ),
                     ),
                   ),
-                  Text(
-                    "Camera",
-                    style: TextThemeProvider.bodyText
-                        .copyWith(fontWeight: FontWeight.w500),
-                  ),
+                  Text("Camera", style: GetTextTheme.sf16_medium),
                 ],
               ),
-              getWidth(
+              AppServices.addWidth(
                 30,
               ),
               Column(
@@ -227,7 +210,7 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                       setState(() {
                         pickedFile;
                       });
-                      popView(context);
+                      AppServices.popView(context);
                       showDialog(
                           context: context,
                           builder: (_) {
@@ -243,19 +226,15 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                       width: 60,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: greyColor.shade300, width: 1)),
+                          border: Border.all(
+                              color: AppColors.greyColor.shade300, width: 1)),
                       child: const Icon(
                         Icons.image,
-                        color: primaryColor,
+                        color: AppColors.primaryColor,
                       ),
                     ),
                   ),
-                  Text(
-                    "Gallery",
-                    style: TextThemeProvider.bodyText
-                        .copyWith(fontWeight: FontWeight.w500),
-                  ),
+                  Text("Gallery", style: GetTextTheme.sf16_medium),
                 ],
               ),
             ],
@@ -291,9 +270,9 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
         children: [
           Text(
             "Enter your name",
-            style: TextThemeProvider.bodyText,
+            style: GetTextTheme.sf16_regular,
           ),
-          getHeight(20),
+          AppServices.addHeight(20),
           Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -302,16 +281,17 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
               hint: widget.userName,
             ),
           ),
-          getHeight(20),
+          AppServices.addHeight(20),
           Row(
             children: [
               Flexible(
                   flex: 3,
                   child: CustomButton(
-                      btnName: "Cancel", onTap: () => popView(context))),
+                      btnName: "Cancel",
+                      onTap: () => AppServices.popView(context))),
               Flexible(
                 flex: 1,
-                child: getWidth(10),
+                child: AppServices.addWidth(10),
               ),
               Flexible(
                   flex: 3,
@@ -343,7 +323,7 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
                               setState(() {
                                 isLoading = false;
                               });
-                              popView(context);
+                              AppServices.popView(context);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -355,7 +335,7 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
                           })),
             ],
           ),
-          getHeight(20),
+          AppServices.addHeight(20),
         ],
       ),
     );
@@ -387,9 +367,9 @@ class _DescriptionModalBottomSheetState
         children: [
           Text(
             "Enter your description",
-            style: TextThemeProvider.bodyText,
+            style: GetTextTheme.sf16_regular,
           ),
-          getHeight(20),
+          AppServices.addHeight(20),
           Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -398,7 +378,7 @@ class _DescriptionModalBottomSheetState
               hint: widget.description,
             ),
           ),
-          getHeight(20),
+          AppServices.addHeight(20),
           Row(
             children: [
               Flexible(
@@ -407,7 +387,7 @@ class _DescriptionModalBottomSheetState
                       btnName: "Cancel", onTap: () => isLoading = false)),
               Flexible(
                 flex: 1,
-                child: getWidth(
+                child: AppServices.addWidth(
                   10,
                 ),
               ),
@@ -442,7 +422,7 @@ class _DescriptionModalBottomSheetState
                               setState(() {
                                 isLoading = false;
                               });
-                              popView(context);
+                              AppServices.popView(context);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -454,7 +434,7 @@ class _DescriptionModalBottomSheetState
                           })),
             ],
           ),
-          getHeight(20),
+          AppServices.addHeight(20),
         ],
       ),
     );
