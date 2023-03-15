@@ -30,14 +30,6 @@ class ChatMessageTextField extends StatefulWidget {
 class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
   String myChatRoomID = "";
   ScrollController? scrollController;
-  @override
-  void initState() {
-    setState(() {
-      myChatRoomID = widget.chatRoomId;
-    });
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,8 +171,15 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
       widget.isFieldEmpty = true;
     });
 
-    if (myChatRoomID.isNotEmpty) {
+    if (widget.chatRoomId.isNotEmpty) {
       print("if Case");
+      await database
+          .ref("ChatRooms/${widget.chatRoomId}")
+          .child("Chats/")
+          .push()
+          .set(bodyData);
+    } else if (myChatRoomID.isNotEmpty) {
+      print("if 2nd Case");
       await database
           .ref("ChatRooms/$myChatRoomID")
           .child("Chats/")
@@ -212,7 +211,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
       });
     }
 
-    scrollController!.animateTo(scrollController!.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 10), curve: Curves.ease);
+    // scrollController!.animateTo(scrollController!.position.maxScrollExtent,
+    //     duration: const Duration(milliseconds: 10), curve: Curves.ease);
   }
 }

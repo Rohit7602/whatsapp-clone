@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';

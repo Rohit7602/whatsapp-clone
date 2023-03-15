@@ -40,24 +40,21 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     scrollController = ScrollController();
 
     initFunction();
+
     super.initState();
   }
 
   initFunction() async {
-    var provider = Provider.of<GetterSetterModel>(context, listen: false);
     await isChatRoomAvailable(widget.targetUser).then((value) {
       setState(() => myChatRoomID = value);
+      var provider = Provider.of<GetterSetterModel>(context, listen: false);
       ChatEventListner(context: context, provider: provider)
           .getChatsMessageList(value);
-      print(value);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).viewInsets.bottom);
-    var provider = Provider.of<GetterSetterModel>(context);
-    var messageList = provider.messageModel;
     return GestureDetector(
       onTap: () => AppServices.keyboardUnfocus(context),
       child: WillPopScope(

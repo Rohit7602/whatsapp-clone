@@ -9,57 +9,58 @@ class ChatEventListner {
   GetterSetterModel provider;
   ChatEventListner({required this.context, required this.provider});
 
-  getChatsMessageList(chatRoomId) {
-    database.ref("ChatRooms/$chatRoomId/").onChildAdded.listen((event) {
-      print(
-          "Event Listner checker ::: ${event.snapshot.children.map((e) => e.value)}");
+  getChatsMessageList(String chatRoomId) {
+    if (chatRoomId.isNotEmpty) {
+      database.ref("ChatRooms/$chatRoomId/").onChildAdded.listen((event) {
+        var msgValue = event.snapshot.children
+            .map((e) => MessageModel.fromJson(
+                e.value as Map<Object?, Object?>, e.key.toString()))
+            .toList();
 
-      var msgValue = event.snapshot.children
-          .map((e) => MessageModel.fromJson(
-              e.value as Map<Object?, Object?>, e.key.toString()))
-          .toList();
+        provider.updateMessageModel(msgValue);
+      });
+    } else {
+      print("Chat ID Empty");
+    }
 
-      provider.updateMessageModel(msgValue);
+    // var msg = event.snapshot.children
+    //     .map((e) => MessageModel.fromJson(
+    //         e.value as Map<Object?, Object?>, e.key.toString()))
+    //     .toList();
 
-      // var msg = event.snapshot.children
-      //     .map((e) => MessageModel.fromJson(
-      //         e.value as Map<Object?, Object?>, e.key.toString()))
-      //     .toList();
+    // provider.updateMessageModel(msg);
 
-      // provider.updateMessageModel(msg);
+    //     database
+    //         .ref(
+    //             "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}")
+    //         .onValue
+    //         .listen(
+    //       (event) async {
+    //         var eventKey = event.snapshot.children.map((e) => e.key).toList();
+    //         for (var element in eventKey) {
+    //           var recieverId = await database
+    //               .ref(
+    //                   "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}/$element/senderId")
+    //               .get();
 
-      //     database
-      //         .ref(
-      //             "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}")
-      //         .onValue
-      //         .listen(
-      //       (event) async {
-      //         var eventKey = event.snapshot.children.map((e) => e.key).toList();
-      //         for (var element in eventKey) {
-      //           var recieverId = await database
-      //               .ref(
-      //                   "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}/$element/senderId")
-      //               .get();
+    //           if (recieverId.value.toString() != auth.currentUser!.uid) {
+    //             database
+    //                 .ref(
+    //                     "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}/$element/")
+    //                 .update({
+    //               "seen": true,
+    //             });
+    //           }
+    //         }
+    //       },
+    //     );
 
-      //           if (recieverId.value.toString() != auth.currentUser!.uid) {
-      //             database
-      //                 .ref(
-      //                     "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}/$element/")
-      //                 .update({
-      //               "seen": true,
-      //             });
-      //           }
-      //         }
-      //       },
-      //     );
-
-      //     database.ref("users/$targetUser").onValue.listen((event) {
-      //       var eventSnapshot = event.snapshot.children.map((e) => e).toList();
-      //       var getStatus =
-      //           eventSnapshot.firstWhere((element) => element.key == "Status");
-      //       var provider = Provider.of<GetterSetterModel>(context, listen: false);
-      //       provider.getStatus(getStatus.value.toString());
-      //     });
-    });
+    //     database.ref("users/$targetUser").onValue.listen((event) {
+    //       var eventSnapshot = event.snapshot.children.map((e) => e).toList();
+    //       var getStatus =
+    //           eventSnapshot.firstWhere((element) => element.key == "Status");
+    //       var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    //       provider.getStatus(getStatus.value.toString());
+    //     });
   }
 }

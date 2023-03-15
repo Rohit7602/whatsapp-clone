@@ -25,7 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String otpCode = "";
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).viewInsets.bottom);
     var provider = Provider.of<GetterSetterModel>(context);
 
     return Scaffold(

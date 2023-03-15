@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
+import '../../database_event/chat_event.dart';
 import 'components/chat_message_field.dart';
 import '../../components/show_loading.dart';
 import 'components/chats_basic.dart';
@@ -36,6 +37,16 @@ class ShowChatOnScreen extends StatefulWidget {
 
 class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
   ScrollController? scrollController;
+
+  @override
+  void initState() {
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+
+    ChatEventListner(context: context, provider: provider)
+        .getChatsMessageList(widget.chatRoomId);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<GetterSetterModel>(context);
