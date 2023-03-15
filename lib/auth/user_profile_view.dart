@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/components/profile_avatar.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
@@ -60,17 +59,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               Padding(
                 padding:
-                    EdgeInsets.symmetric(horizontal: 22.0.w, vertical: 18.h),
+                    const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
                 child: Form(
                   key: _key,
                   child: Column(
                     children: [
                       userProfileAvtar(pickedFile, () async {
                         await showModalBottomSheet(
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(18.sp),
-                                    topRight: Radius.circular(18.sp))),
+                                    topLeft: Radius.circular(18),
+                                    topRight: Radius.circular(18))),
                             context: context,
                             builder: (_) {
                               return const ImagePickerFunction();
@@ -80,7 +79,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           });
                         });
                       }),
-                      AppServices.addHeight(20.h),
+                      AppServices.addHeight(20),
                       SecondaryTextFieldView(
                         validator: fieldEmptyValidation("Name"),
                         controller: nameController,
@@ -93,7 +92,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           ),
                         ),
                       ),
-                      AppServices.addHeight(20.h),
+                      AppServices.addHeight(20),
                       SecondaryTextFieldView(
                         validator: fieldEmptyValidation("Description"),
                         controller: descriptionController,
@@ -106,7 +105,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           ),
                         ),
                       ),
-                      AppServices.addHeight(30.h),
+                      AppServices.addHeight(30),
                       provider.isLoading
                           ? showLoading()
                           : SaveProfileButton(context, provider),
@@ -116,7 +115,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ),
               if (showEmoji)
                 SizedBox(
-                  height: 300.h,
+                  height: 300,
                   child: EmojiPicker(
                     textEditingController: nameController,
                     config: Config(

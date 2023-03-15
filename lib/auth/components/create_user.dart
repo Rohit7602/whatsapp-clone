@@ -15,6 +15,7 @@ createUser(
     String downloadUrl,
     GetterSetterModel provider) async {
   try {
+    print("Auth User Checker :::: ${auth.currentUser!.uid}");
     provider.loadingState(true);
     Map<String, dynamic> bodyData = {
       "Name": nameController.text,

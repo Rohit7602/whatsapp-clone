@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
 
@@ -33,11 +32,11 @@ class PrimaryTextFieldView extends StatelessWidget {
       controller: controller,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.sp, 5.sp, 10.sp, 5.sp),
+          contentPadding: const EdgeInsets.fromLTRB(20, 5, 10, 5),
           prefixIcon: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
-            children: [AppServices.addWidth(10.w), prefixIcon],
+            children: [AppServices.addWidth(10), prefixIcon],
           ),
           hintText: hintText,
           hintStyle: GetTextTheme.sf14_regular

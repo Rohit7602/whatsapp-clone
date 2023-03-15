@@ -32,6 +32,11 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
+  emptyGetUserList() {
+    _getUserList.clear();
+    notifyListeners();
+  }
+
   final List<TargetUserModel> _targetModel = [];
   List<TargetUserModel> get targetUserModel => _targetModel;
   getLastMesage(TargetUserModel chats) {

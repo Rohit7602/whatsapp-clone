@@ -1,7 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/components/chat_room_list.dart';
 import 'package:whatsapp_clone/database_event/event_listner.dart';
@@ -35,12 +34,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Container(
-        margin: EdgeInsets.only(top: 15.h),
+        margin: const EdgeInsets.only(top: 15),
         child: Consumer<GetterSetterModel>(
           builder: (context, data, chidl) {
             return data.targetUserModel.isEmpty
                 ? CustomAssetImage(context, 300, AppImages.startChat,
-                    EdgeInsets.only(top: 60.h))
+                    const EdgeInsets.only(top: 60))
                 : const ChatRoomList();
           },
         ),
@@ -58,11 +57,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 children: [
                   Image.asset(
                     AppImages.chatGIF,
-                    height: 70.h,
+                    height: 70,
                   ),
                   Image.asset(
                     AppImages.arrowGIF,
-                    height: 60.h,
+                    height: 60,
                   ),
                   FloatingActionButton(
                     backgroundColor: AppColors.primaryColor,

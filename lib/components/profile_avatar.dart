@@ -2,7 +2,6 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../helper/styles/app_style_sheet.dart';
 
 Stack userProfileAvtar(File? pickedFile, onTap) {
@@ -10,9 +9,9 @@ Stack userProfileAvtar(File? pickedFile, onTap) {
     alignment: Alignment.bottomRight,
     children: [
       Container(
-        margin: EdgeInsets.symmetric(vertical: 20.h),
-        height: 150.h,
-        width: 150.w,
+        margin: const EdgeInsets.symmetric(vertical: 20),
+        height: 150,
+        width: 150,
         decoration: BoxDecoration(
             border: Border.all(color: AppColors.greyColor.withOpacity(0.4)),
             shape: BoxShape.circle,
@@ -33,8 +32,8 @@ Stack userProfileAvtar(File? pickedFile, onTap) {
         ),
       ),
       Positioned(
-        right: 15.w,
-        bottom: 20.h,
+        right: 15,
+        bottom: 20,
         child: GestureDetector(
           onTap: () => onTap(),
           child: Container(

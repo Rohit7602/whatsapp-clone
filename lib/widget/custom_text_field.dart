@@ -1,8 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../helper/styles/app_style_sheet.dart';
 
 // get TextField Of the screen
@@ -64,9 +62,9 @@ class CustomTextFieldView extends StatelessWidget {
               )
             : const SizedBox(),
         Container(
-          margin: EdgeInsets.only(top: 5.sp),
+          margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.r),
+              borderRadius: BorderRadius.circular(10),
               color: AppColors.whiteColor,
               border: Border.all(color: AppColors.primaryColor)),
           child: TextFormField(
@@ -81,7 +79,7 @@ class CustomTextFieldView extends StatelessWidget {
             validator: validator,
             onChanged: onChange,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(20.sp, 10.sp, 10.sp, 10.sp),
+              contentPadding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
               prefixIcon: prefixIconEnable
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,

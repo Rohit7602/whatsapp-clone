@@ -2,12 +2,14 @@
 
 import 'dart:io';
 import 'package:clipboard/clipboard.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../components/chat_message_field.dart';
+import 'package:whatsapp_clone/helper/base_getters.dart';
+import 'components/chat_message_field.dart';
 import '../../components/show_loading.dart';
+import 'components/chats_basic.dart';
 import '../../getter_setter/getter_setter.dart';
 import '../../helper/global_function.dart';
 import '../../helper/styles/app_style_sheet.dart';
@@ -18,12 +20,14 @@ class ShowChatOnScreen extends StatefulWidget {
   TextEditingController messageController;
   String targetUser;
   File? pickedFile;
+  String chatRoomId;
   ShowChatOnScreen(
       {required this.showEmoji,
       required this.isFieldEmpty,
       required this.messageController,
       required this.targetUser,
       required this.pickedFile,
+      required this.chatRoomId,
       super.key});
 
   @override
@@ -31,63 +35,49 @@ class ShowChatOnScreen extends StatefulWidget {
 }
 
 class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
+  ScrollController? scrollController;
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<GetterSetterModel>(context);
     var messageList = provider.messageModel;
     return Column(
       children: [
-        Flexible(
+        Expanded(
           child: ListView.builder(
             controller: scrollController,
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             itemCount: messageList.length,
             itemBuilder: (context, index) {
+              var senderId = messageList[index].senderId;
+              var message = messageList[index].message;
+              var messageType = messageList[index].messageType;
+              var messageSeen = messageList[index].seen;
               var dateTime = DateFormat('hh:mm a')
                   .format(DateTime.parse(messageList[index].sentOn.toString()));
 
-              // if (messageList.isNotEmpty) {
-              //   scrollController!.animateTo(
-              //       scrollController!.position.maxScrollExtent,
-              //       duration: const Duration(milliseconds: 10),
-              //       curve: Curves.bounceIn);
-              // }
-
               return Row(
-                mainAxisAlignment:
-                    messageList[index].senderId == auth.currentUser!.uid
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
+                mainAxisAlignment: messageAlignment(senderId),
                 children: [
                   Container(
                     constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width - 100),
                     margin: EdgeInsets.only(
                         bottom: 10,
-                        left:
-                            messageList[index].senderId == auth.currentUser!.uid
-                                ? 50
-                                : 4,
-                        right:
-                            messageList[index].senderId == auth.currentUser!.uid
-                                ? 4
-                                : 50),
+                        left: isSendIdOrCurrentIdTrue(senderId) ? 50 : 4,
+                        right: isSendIdOrCurrentIdTrue(senderId) ? 4 : 50),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),
                     decoration: BoxDecoration(
-                      color:
-                          messageList[index].senderId == auth.currentUser!.uid
-                              ? AppColors.chatTileColor
-                              : AppColors.whiteColor,
-                      borderRadius: BorderRadius.circular(10).copyWith(
-                        bottomRight:
-                            messageList[index].senderId == auth.currentUser!.uid
-                                ? const Radius.circular(0)
-                                : const Radius.circular(12),
-                        bottomLeft:
-                            messageList[index].senderId == auth.currentUser!.uid
-                                ? const Radius.circular(12)
-                                : const Radius.circular(0),
+                      color: isSendIdOrCurrentIdTrue(senderId)
+                          ? AppColors.chatTileColor
+                          : AppColors.whiteColor,
+                      borderRadius: isMessageCircular().copyWith(
+                        bottomRight: isSendIdOrCurrentIdTrue(senderId)
+                            ? const Radius.circular(0)
+                            : const Radius.circular(12),
+                        bottomLeft: senderId == auth.currentUser!.uid
+                            ? const Radius.circular(12)
+                            : const Radius.circular(0),
                       ),
                     ),
                     child: Wrap(
@@ -97,12 +87,11 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             InkWell(
-                              onLongPress: () => FlutterClipboard.copy(
-                                  messageList[index].message),
-                              child: messageList[index].messageType == "text"
+                              onLongPress: () => FlutterClipboard.copy(message),
+                              child: messageType == "text"
                                   ? Text(messageList[index].message,
                                       style: GetTextTheme.sf14_medium)
-                                  : messageList[index].messageType == "image"
+                                  : messageType == "image"
                                       ? Column(
                                           children: [
                                             Container(
@@ -136,9 +125,9 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                                               .greyColor
                                                               .shade800),
                                                 ),
-                                                messageList[index].senderId ==
-                                                        auth.currentUser!.uid
-                                                    ? messageList[index].seen
+                                                isSendIdOrCurrentIdTrue(
+                                                        senderId)
+                                                    ? messageSeen
                                                         ? const Icon(
                                                             Icons.done_all,
                                                             color: AppColors
@@ -158,10 +147,8 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                         )
                                       : const SizedBox(),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            messageList[index].messageType == "image"
+                            AppServices.addWidth(5),
+                            messageType == "image"
                                 ? const SizedBox()
                                 : Text(
                                     dateTime,
@@ -169,14 +156,11 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                                         fontSize: 8,
                                         color: AppColors.greyColor.shade800),
                                   ),
-                            const SizedBox(
-                              width: 6,
-                            ),
-                            messageList[index].messageType == "image"
+                            AppServices.addWidth(6),
+                            messageType == "image"
                                 ? const SizedBox()
-                                : messageList[index].senderId ==
-                                        auth.currentUser!.uid
-                                    ? messageList[index].seen
+                                : isSendIdOrCurrentIdTrue(senderId)
+                                    ? messageSeen
                                         ? const Icon(
                                             Icons.done_all,
                                             color: AppColors.primaryColor,
@@ -198,23 +182,29 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
             },
           ),
         ),
-        MessageTextField(
+        Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: ChatMessageTextField(
             showEmoji: widget.showEmoji,
             isFieldEmpty: widget.isFieldEmpty,
             messageController: widget.messageController,
             targetUser: widget.targetUser,
-            pickedFile: widget.pickedFile),
-        if (widget.showEmoji)
-          SizedBox(
-            height: 300,
-            child: EmojiPicker(
-              textEditingController: widget.messageController,
-              config: Config(
-                columns: 7,
-                emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-              ),
-            ),
-          )
+            pickedFile: widget.pickedFile,
+            chatRoomId: widget.chatRoomId,
+          ),
+        ),
+        // if (widget.showEmoji)
+        //   SizedBox(
+        //     height: 300,
+        //     child: EmojiPicker(
+        //       textEditingController: widget.messageController,
+        //       config: Config(
+        //         columns: 7,
+        //         emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+        //       ),
+        //     ),
+        //   )
       ],
     );
   }

@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
@@ -43,8 +43,8 @@ class _VerifyOTPState extends State<VerifyOTP> {
     const borderColor = AppColors.primaryColor;
 
     final defaultPinTheme = PinTheme(
-      width: 56.w,
-      height: 56.h,
+      width: 56,
+      height: 56,
       textStyle:
           GetTextTheme.sf22_regular.copyWith(color: AppColors.lightGreenColor),
       decoration: BoxDecoration(
@@ -60,16 +60,16 @@ class _VerifyOTPState extends State<VerifyOTP> {
           key: _key,
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
                   CustomAssetImage(context, 250, AppImages.verifyOTPImage,
-                      EdgeInsets.only(top: 20.h, bottom: 30.h)),
+                      const EdgeInsets.only(top: 20, bottom: 30)),
                   Text("Verifying your number",
                       textAlign: TextAlign.center,
                       style: GetTextTheme.sf28_bold),
                   Padding(
-                    padding: EdgeInsets.only(top: 30.h, bottom: 10.h),
+                    padding: const EdgeInsets.only(top: 30, bottom: 10),
                     child: Text(
                         "$verifyOTPDescription ${widget.phoneNumber} recently.",
                         textAlign: TextAlign.center,
@@ -79,11 +79,11 @@ class _VerifyOTPState extends State<VerifyOTP> {
                       textAlign: TextAlign.center,
                       style: GetTextTheme.sf14_regular
                           .copyWith(color: AppColors.greyColor.shade500)),
-                  AppServices.addHeight(20.h),
+                  AppServices.addHeight(20),
                   PinFieldView(defaultPinTheme, context, provider,
                       focusedBorderColor, fillColor),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.h),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -135,23 +135,23 @@ class _VerifyOTPState extends State<VerifyOTP> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 9.h),
-            width: 22.w,
-            height: 1.h,
+            margin: const EdgeInsets.only(bottom: 9),
+            width: 22,
+            height: 1,
             color: focusedBorderColor,
           ),
         ],
       ),
       focusedPinTheme: defaultPinTheme.copyWith(
         decoration: defaultPinTheme.decoration!.copyWith(
-          borderRadius: BorderRadius.circular(8.sp),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: focusedBorderColor),
         ),
       ),
       submittedPinTheme: defaultPinTheme.copyWith(
         decoration: defaultPinTheme.decoration!.copyWith(
           color: fillColor,
-          borderRadius: BorderRadius.circular(19.sp),
+          borderRadius: BorderRadius.circular(19),
           border: Border.all(color: focusedBorderColor),
         ),
       ),

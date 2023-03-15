@@ -20,7 +20,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var userList = Provider.of<GetterSetterModel>(context);
+    var userList = Provider.of<GetterSetterModel>(context).getAllUser;
 
     return Scaffold(
       appBar: AppBar(
@@ -66,19 +66,18 @@ class _ContactScreenState extends State<ContactScreen> {
                   .copyWith(color: AppColors.greyColor),
             ),
             AppServices.addHeight(10),
-            userList.getAllUser.isEmpty
+            userList.isEmpty
                 ? const Text("You Don't have any contacts")
                 : ListView.builder(
                     shrinkWrap: true,
-                    itemCount: userList.getAllUser.length,
+                    itemCount: userList.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         onTap: () {
                           AppServices.pushTo(
                               context,
                               ChatRoomScreen(
-                                  targetUser:
-                                      userList.getAllUser[index].userId));
+                                  targetUser: userList[index].userId));
                         },
                         leading: Container(
                           height: 50,
@@ -86,7 +85,7 @@ class _ContactScreenState extends State<ContactScreen> {
                           decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppColors.lightGreyColor),
-                          child: userList.getAllUser[index].profileImage == ""
+                          child: userList[index].profileImage == ""
                               ? const Icon(
                                   Icons.person,
                                   color: AppColors.whiteColor,
@@ -95,17 +94,17 @@ class _ContactScreenState extends State<ContactScreen> {
                               : ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
                                   child: Image.network(
-                                    userList.getAllUser[index].profileImage,
+                                    userList[index].profileImage,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                         ),
                         title: Text(
-                          userList.getAllUser[index].number,
+                          userList[index].number,
                           style: GetTextTheme.sf14_regular,
                         ),
                         subtitle: Text(
-                          userList.getAllUser[index].description,
+                          userList[index].description,
                           style: GetTextTheme.sf12_medium
                               .copyWith(color: AppColors.greyColor),
                         ),

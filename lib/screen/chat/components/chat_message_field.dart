@@ -1,35 +1,40 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, avoid_print
 
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
-import '../helper/global_function.dart';
-import '../helper/styles/app_style_sheet.dart';
-import '../widget/create_chatroom.dart';
+import '../../../helper/global_function.dart';
+import '../../../helper/styles/app_style_sheet.dart';
 
-class MessageTextField extends StatefulWidget {
+class ChatMessageTextField extends StatefulWidget {
   bool showEmoji;
   bool isFieldEmpty;
   TextEditingController messageController;
   String targetUser;
   File? pickedFile;
-  MessageTextField(
+  String chatRoomId;
+  ChatMessageTextField(
       {required this.showEmoji,
       required this.isFieldEmpty,
       required this.messageController,
       required this.targetUser,
       required this.pickedFile,
+      required this.chatRoomId,
       super.key});
 
   @override
-  State<MessageTextField> createState() => _MessageTextFieldState();
+  State<ChatMessageTextField> createState() => _ChatMessageTextFieldState();
 }
 
-class _MessageTextFieldState extends State<MessageTextField> {
+class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
+  String myChatRoomID = "";
+  ScrollController? scrollController;
   @override
   void initState() {
-    scrollController = ScrollController();
+    setState(() {
+      myChatRoomID = widget.chatRoomId;
+    });
 
     super.initState();
   }
@@ -151,7 +156,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
                 : const Icon(
                     Icons.send,
                     color: AppColors.whiteColor,
-                    size: 25,
+                    size: 20,
                   ),
           ),
         ),
@@ -166,18 +171,46 @@ class _MessageTextFieldState extends State<MessageTextField> {
       "seen": false,
       "sentOn": DateTime.now().toIso8601String(),
       "messageType": "text",
+      "users": [auth.currentUser!.uid, widget.targetUser]
     };
 
-    widget.messageController.clear();
+    // widget.messageController.clear();
     setState(() {
       widget.isFieldEmpty = true;
     });
 
-    await database
-        .ref(
-            "ChatRooms/${createChatRoomId(auth.currentUser!.uid, widget.targetUser)}")
-        .push()
-        .set(bodyData);
+    if (myChatRoomID.isNotEmpty) {
+      print("if Case");
+      await database
+          .ref("ChatRooms/$myChatRoomID")
+          .child("Chats/")
+          .push()
+          .set(bodyData);
+    } else {
+      print("else Case");
+      await database
+          .ref("ChatRooms/")
+          .push()
+          .child("Chats/")
+          .push()
+          .set(bodyData)
+          .then((value) async {
+        var getChatRoom = await database.ref("ChatRooms/").get();
+
+        var getMyChatRoomId =
+            getChatRoom.children.map((e) => e.key.toString()).toList().last;
+        setState(() {
+          myChatRoomID = getMyChatRoomId;
+        });
+
+        await database
+            .ref("users/${auth.currentUser!.uid}/Mychatrooms/$getMyChatRoomId/")
+            .set({"ChatId": getMyChatRoomId});
+        await database
+            .ref("users/${widget.targetUser}/Mychatrooms/$getMyChatRoomId/")
+            .set({"ChatId": getMyChatRoomId});
+      });
+    }
 
     scrollController!.animateTo(scrollController!.position.maxScrollExtent,
         duration: const Duration(milliseconds: 10), curve: Curves.ease);

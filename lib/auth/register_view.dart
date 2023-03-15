@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/auth/components/send_otp.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
@@ -26,6 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String otpCode = "";
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).viewInsets.bottom);
     var provider = Provider.of<GetterSetterModel>(context);
 
     return Scaffold(
@@ -34,14 +34,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Form(
           key: _key,
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            padding: const EdgeInsets.symmetric(horizontal: 18),
             children: [
               CustomAssetImage(context, 250, AppImages.registerImage,
-                  EdgeInsets.symmetric(vertical: 30.h)),
+                  const EdgeInsets.symmetric(vertical: 30)),
               Text("Let's Sign You in",
                   textAlign: TextAlign.center, style: GetTextTheme.sf28_bold),
               Padding(
-                padding: EdgeInsets.only(top: 10.h, bottom: 40.h),
+                padding: const EdgeInsets.only(top: 10, bottom: 40),
                 child: Text(registerScreenDescription,
                     textAlign: TextAlign.center,
                     style: GetTextTheme.sf14_regular),
@@ -62,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 fieldEmptyError: "Please Enter Text",
               ),
               Padding(
-                padding: EdgeInsets.only(top: 10.h, bottom: 30.h),
+                padding: const EdgeInsets.only(top: 10, bottom: 30),
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(

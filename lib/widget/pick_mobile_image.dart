@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, must_be_immutable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../components/upload_image_db.dart';
 
 class ImagePickerFunction extends StatelessWidget {
@@ -10,7 +9,7 @@ class ImagePickerFunction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.h),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
@@ -26,13 +25,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => GetterSetterModel())
       ],
-      child: ScreenUtilInit(
-        builder: (context, child) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: SplashScreen(),
-          );
-        },
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
       ),
     );
   }

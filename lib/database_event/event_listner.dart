@@ -54,15 +54,21 @@ class DatabaseEventListner {
 
   getAllUsers() {
     database.ref("users").onValue.listen((event) {
-      var data = event.snapshot.children
+      provider.emptyGetUserList();
+
+      var getUserList = event.snapshot.children
+          .where((element) => element.key.toString() != auth.currentUser!.uid)
+          .toList();
+
+      var data = getUserList
           .map((e) => UserModel.fromJson(
               e.value as Map<Object?, Object?>, e.key.toString()))
           .toList();
 
       provider.getUsers(data);
+
       var myData = event.snapshot.children
           .firstWhere((e) => e.key.toString() == auth.currentUser!.uid);
-
       var fetchMyData = UserModel.fromJson(
           myData.value as Map<Object?, Object?>, myData.key.toString());
 
