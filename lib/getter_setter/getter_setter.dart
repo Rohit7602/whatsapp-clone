@@ -37,11 +37,15 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  final List<TargetUserModel> _targetModel = [];
-  List<TargetUserModel> get targetUserModel => _targetModel;
+  final List<TargetUserModel> _lastMessageModel = [];
+  List<TargetUserModel> get targetUserModel => _lastMessageModel;
   getLastMesage(TargetUserModel chats) {
-    _targetModel.clear();
-    _targetModel.add(chats);
+    _lastMessageModel.add(chats);
+    notifyListeners();
+  }
+
+  removeLastMessage() {
+    _lastMessageModel.clear();
     notifyListeners();
   }
 
@@ -52,10 +56,40 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  List<MessageModel> _messageModel = [];
+  final List<MessageModel> _messageModel = [];
   List<MessageModel> get messageModel => _messageModel;
-  updateMessageModel(List<MessageModel> msg) {
-    _messageModel = msg;
+  updateMessageModel(MessageModel msg) {
+    if (_messageModel.any((element) => element.messageId == msg.messageId)) {
+      null;
+    } else {
+      _messageModel.add(msg);
+    }
+
+    notifyListeners();
+  }
+
+  // MessageModel? _singleMessageModel;
+  // MessageModel get singleMessageModel => _singleMessageModel!;
+  // updateSingleMessage(MessageModel msg) {
+  //   _messageModel.add(msg);
+
+  //   notifyListeners();
+  // }
+
+  removeChatMessages() {
+    _messageModel.clear();
+    notifyListeners();
+  }
+
+  String? _getChatRoomId;
+  String? get getChatRoomId => _getChatRoomId;
+  updateChatRoomId(String id) {
+    _getChatRoomId = id;
+    notifyListeners();
+  }
+
+  removeChatRoomId() {
+    _getChatRoomId = "";
     notifyListeners();
   }
 }

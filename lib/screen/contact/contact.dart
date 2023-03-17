@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import '../../helper/base_getters.dart';
@@ -15,13 +16,10 @@ class ContactScreen extends StatefulWidget {
 }
 
 class _ContactScreenState extends State<ContactScreen> {
-  final database = FirebaseDatabase.instance;
-  final auth = FirebaseAuth.instance;
-
   @override
   Widget build(BuildContext context) {
-    var userList = Provider.of<GetterSetterModel>(context).getAllUser;
-
+    var provider = Provider.of<GetterSetterModel>(context);
+    var userList = provider.getAllUser;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
@@ -34,7 +32,7 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+          IconButton(onPressed: () async {}, icon: const Icon(Icons.more_vert)),
         ],
       ),
       body: Padding(
@@ -73,11 +71,49 @@ class _ContactScreenState extends State<ContactScreen> {
                     itemCount: userList.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        onTap: () {
-                          AppServices.pushTo(
+                        onTap: () async {
+                          Future<bool> rebuild() async {
+                            if (!mounted) return false;
+                            // if there's a current frame,
+                            if (SchedulerBinding.instance.schedulerPhase !=
+                                SchedulerPhase.idle) {
+                              // wait for the end of that frame.
+                              await SchedulerBinding.instance.endOfFrame;
+                              if (!mounted) return false;
+                            }
+                            setState(() {});
+                            return true;
+                          }
+
+                          if (!await rebuild()) return;
+
+                          var getChatRoomId = provider.targetUserModel
+                              .where((element) =>
+                                  element.userModel.number ==
+                                  userList[index].number)
+                              .toList();
+
+                          if (getChatRoomId.isNotEmpty) {
+                            print("firstCase");
+
+                            print(userList[index].number);
+
+                            AppServices.pushTo(
                               context,
                               ChatRoomScreen(
-                                  targetUser: userList[index].userId));
+                                targetUser: userList[index],
+                                chatRoomId: getChatRoomId.first.chatRoomId,
+                              ),
+                            );
+                          } else {
+                            print("run second Case");
+                            AppServices.pushTo(
+                                context,
+                                ChatRoomScreen(
+                                  targetUser: userList[index],
+                                  chatRoomId: "",
+                                ));
+                          }
                         },
                         leading: Container(
                           height: 50,
@@ -104,7 +140,8 @@ class _ContactScreenState extends State<ContactScreen> {
                           style: GetTextTheme.sf14_regular,
                         ),
                         subtitle: Text(
-                          userList[index].description,
+                          userList[index].userId,
+                          // userList[index].description,
                           style: GetTextTheme.sf12_medium
                               .copyWith(color: AppColors.greyColor),
                         ),

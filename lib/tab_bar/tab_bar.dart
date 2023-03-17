@@ -6,7 +6,6 @@ import 'package:whatsapp_clone/app_config.dart';
 import 'package:whatsapp_clone/auth/register_view.dart';
 import 'package:whatsapp_clone/splash.dart';
 import 'package:whatsapp_clone/function/snackbar.dart';
-import 'package:whatsapp_clone/function/user_status.dart';
 import '../helper/base_getters.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
@@ -33,18 +32,8 @@ class _HomeTabBarState extends State<HomeTabBar>
     tabController = TabController(
         initialIndex: widget.currentIndex, vsync: this, length: 4);
     WidgetsBinding.instance.addObserver(this);
-    setUserStatus(context, "online");
-    super.initState();
-  }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
-      setUserStatus(context, "online");
-    } else {
-      setUserStatus(context, "offline");
-    }
+    super.initState();
   }
 
   @override

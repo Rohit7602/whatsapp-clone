@@ -1,17 +1,21 @@
-// ignore_for_file: must_be_immutable, avoid_print
+// ignore_for_file: must_be_immutable, avoid_print, use_build_context_synchronously
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/components/upload_image_db.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../../../helper/global_function.dart';
 import '../../../helper/styles/app_style_sheet.dart';
+import '../../../model/user_model.dart';
+import '../chat_image_preview.dart';
 
 class ChatMessageTextField extends StatefulWidget {
   bool showEmoji;
   bool isFieldEmpty;
   TextEditingController messageController;
-  String targetUser;
+  UserModel targetUser;
   File? pickedFile;
   String chatRoomId;
   ChatMessageTextField(
@@ -28,7 +32,6 @@ class ChatMessageTextField extends StatefulWidget {
 }
 
 class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
-  String myChatRoomID = "";
   ScrollController? scrollController;
 
   @override
@@ -82,23 +85,20 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                                   widget.pickedFile;
                                 });
 
-                                // Navigator.of(context).pop();
-                                // pushTo(
-                                //     context,
-                                //     ChatImagePreview(
-                                //         chatRoomId: createChatRoomId(
-                                //             auth.currentUser!.uid,
-                                //             widget.targetUser.userModel.userId),
-                                //         pickedFile: pickedFile));
+                                AppServices.pushTo(
+                                    context,
+                                    ChatImagePreview(
+                                      chatRoomId: widget.chatRoomId,
+                                      pickedFile: widget.pickedFile,
+                                      targetUser: widget.targetUser,
+                                    ));
                               },
                               child: const Icon(
                                 Icons.attach_file_outlined,
                                 color: AppColors.whiteColor,
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            AppServices.addWidth(10),
                             const Icon(
                               Icons.camera_alt,
                               color: AppColors.whiteColor,
@@ -160,55 +160,58 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
     Map<String, dynamic> bodyData = {
       "message": widget.messageController.text,
       "senderId": auth.currentUser!.uid,
+      "recieverId": widget.targetUser,
       "seen": false,
       "sentOn": DateTime.now().toIso8601String(),
       "messageType": "text",
       "users": [auth.currentUser!.uid, widget.targetUser]
     };
 
-    // widget.messageController.clear();
+    widget.messageController.clear();
     setState(() {
       widget.isFieldEmpty = true;
     });
 
-    if (widget.chatRoomId.isNotEmpty) {
-      print("if Case");
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+
+    if (provider.getChatRoomId!.isNotEmpty) {
       await database
-          .ref("ChatRooms/${widget.chatRoomId}")
-          .child("Chats/")
-          .push()
-          .set(bodyData);
-    } else if (myChatRoomID.isNotEmpty) {
-      print("if 2nd Case");
-      await database
-          .ref("ChatRooms/$myChatRoomID")
+          .ref("ChatRooms/${provider.getChatRoomId}")
           .child("Chats/")
           .push()
           .set(bodyData);
     } else {
-      print("else Case");
-      await database
-          .ref("ChatRooms/")
-          .push()
-          .child("Chats/")
-          .push()
-          .set(bodyData)
-          .then((value) async {
-        var getChatRoom = await database.ref("ChatRooms/").get();
+      if (widget.chatRoomId.isNotEmpty) {
+        await database
+            .ref("ChatRooms/${widget.chatRoomId}")
+            .child("Chats/")
+            .push()
+            .set(bodyData);
+      } else {
+        await database
+            .ref("ChatRooms/")
+            .push()
+            .child("Chats/")
+            .push()
+            .set(bodyData)
+            .then((value) async {
+          var getChatRoom = await database.ref("ChatRooms/").get();
 
-        var getMyChatRoomId =
-            getChatRoom.children.map((e) => e.key.toString()).toList().last;
-        setState(() {
-          myChatRoomID = getMyChatRoomId;
+          var getMyChatRoomId =
+              getChatRoom.children.map((e) => e.key.toString()).toList().last;
+          setState(() {
+            provider.updateChatRoomId(getMyChatRoomId);
+          });
+
+          await database
+              .ref(
+                  "users/${auth.currentUser!.uid}/Mychatrooms/$getMyChatRoomId/")
+              .set({"ChatId": getMyChatRoomId});
+          await database
+              .ref("users/${widget.targetUser}/Mychatrooms/$getMyChatRoomId/")
+              .set({"ChatId": getMyChatRoomId});
         });
-
-        await database
-            .ref("users/${auth.currentUser!.uid}/Mychatrooms/$getMyChatRoomId/")
-            .set({"ChatId": getMyChatRoomId});
-        await database
-            .ref("users/${widget.targetUser}/Mychatrooms/$getMyChatRoomId/")
-            .set({"ChatId": getMyChatRoomId});
-      });
+      }
     }
 
     // scrollController!.animateTo(scrollController!.position.maxScrollExtent,

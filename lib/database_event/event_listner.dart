@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/model/message_model.dart';
 import '../getter_setter/getter_setter.dart';
@@ -10,46 +12,47 @@ class DatabaseEventListner {
   GetterSetterModel provider;
   DatabaseEventListner({required this.context, required this.provider});
 
-  fetchChatRoomsEventListner() {
-    if (provider.intializeChats) {
-      database.ref("ChatRooms").onValue.listen((event) async {
-        if (event.snapshot.exists) {
-          var chatRooms = event.snapshot.children
-              .where((element) =>
-                  element.key.toString().contains(auth.currentUser!.uid))
-              .toList();
+  getAllChatRooms() {
+    database
+        .ref("users/${auth.currentUser!.uid}/Mychatrooms/")
+        .onChildAdded
+        .listen((event) async {
+      if (event.snapshot.exists) {
+        var getChatrooms =
+            event.snapshot.children.map((e) => e.value.toString());
 
-          var chatRoomList = chatRooms.map((e) => e.key).toList();
+        for (var chatId in getChatrooms) {
+          var getChatroomsData =
+              await database.ref("ChatRooms/$chatId/Chats/").get();
+          var getUserList = await database.ref("users").get();
 
-          for (var room in chatRoomList) {
-            var roomsList = chatRooms.map((v) => v.key!
-                .split("_vs_")
-                .firstWhere(
-                    (element) => element.toString() != auth.currentUser!.uid));
+          var getLastMessage = getChatroomsData.children
+              .map((e) => MessageModel.fromJson(
+                  e.value as Map<Object?, Object?>, e.key.toString()))
+              .toList()
+              .last;
 
-            var userSnapshot =
-                await database.ref("users/${roomsList.first}").get();
-            var msgPath = await database.ref("ChatRooms/$room").get();
-            var lastMessageGet = msgPath.children
-                .map((e) => TargetUserModel.fromJson(
-                    room.toString(),
-                    MessageModel.fromJson(
-                        e.value as Map<Object?, Object?>, e.key.toString()),
-                    UserModel.fromJson(
-                        userSnapshot.value as Map<Object?, Object?>,
-                        userSnapshot.key.toString())))
-                .toList()
-                .last;
+          var targetUser = getLastMessage.users
+              .firstWhere((element) => element != auth.currentUser!.uid);
 
-            provider.getLastMesage(lastMessageGet);
-          }
+          var targetUserData = getUserList.children
+              .firstWhere((e) => e.key.toString() == targetUser.toString());
 
-          provider.intializeChatRoom(false);
-        } else {
-          provider.intializeChatRoom(false);
+          var getUserModel = UserModel.fromJson(
+            targetUserData.value as Map<Object?, Object?>,
+            targetUserData.key.toString(),
+          );
+
+          var getUserData = TargetUserModel.fromJson(
+              chatRoomId: chatId,
+              messageId: targetUserData.key.toString(),
+              messageModel: getLastMessage,
+              userModel: getUserModel);
+
+          provider.getLastMesage(getUserData);
         }
-      });
-    }
+      }
+    });
   }
 
   getAllUsers() {
@@ -62,7 +65,9 @@ class DatabaseEventListner {
 
       var data = getUserList
           .map((e) => UserModel.fromJson(
-              e.value as Map<Object?, Object?>, e.key.toString()))
+                e.value as Map<Object?, Object?>,
+                e.key.toString(),
+              ))
           .toList();
 
       provider.getUsers(data);
@@ -70,7 +75,9 @@ class DatabaseEventListner {
       var myData = event.snapshot.children
           .firstWhere((e) => e.key.toString() == auth.currentUser!.uid);
       var fetchMyData = UserModel.fromJson(
-          myData.value as Map<Object?, Object?>, myData.key.toString());
+        myData.value as Map<Object?, Object?>,
+        myData.key.toString(),
+      );
 
       provider.getUserModel(fetchMyData);
     });

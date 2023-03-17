@@ -316,8 +316,9 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
                                   .get();
 
                               var fetchData = UserModel.fromJson(
-                                  pathUser.value as Map<Object?, Object?>,
-                                  pathUser.key.toString());
+                                pathUser.value as Map<Object?, Object?>,
+                                pathUser.key.toString(),
+                              );
 
                               userProvider.getUserModel(fetchData);
                               setState(() {

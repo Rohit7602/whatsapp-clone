@@ -2,16 +2,22 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/screen/chat/chat_room.dart';
+import '../../components/upload_image_db.dart';
 import '../../function/custom_appbar.dart';
 import '../../helper/base_getters.dart';
+import '../../helper/global_function.dart';
 import '../../helper/styles/app_style_sheet.dart';
+import '../../model/user_model.dart';
 
 class ChatImagePreview extends StatefulWidget {
   String chatRoomId;
   File? pickedFile;
+  UserModel targetUser;
   ChatImagePreview(
-      {required this.pickedFile, required this.chatRoomId, super.key});
+      {required this.chatRoomId,
+      required this.pickedFile,
+      required this.targetUser,
+      super.key});
   @override
   State<ChatImagePreview> createState() => _ChatImagePreviewState();
 }
@@ -36,7 +42,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
               Icons.close,
               color: AppColors.whiteColor,
             )),
-        title: "",
+        title: const Text(""),
         color: AppColors.blackColor,
         action: [IconButton(onPressed: () {}, icon: const Icon(Icons.crop))],
       ),
@@ -47,16 +53,17 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
           File(
             widget.pickedFile!.path,
           ),
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
         ),
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 15,
             top: 15,
             right: 10,
             left: 10),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Expanded(
               child: Container(
@@ -100,38 +107,33 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
             ),
             GestureDetector(
               onTap: () async {
-                setState(() {
-                  getFutureImage = widget.pickedFile;
-                  getCaptionController = captionController;
-                });
+                if (captionController.text.isEmpty) {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  downloadUrl =
+                      await uploadImageOnDb("ChatRooms", widget.pickedFile);
+                  setState(() {
+                    downloadUrl;
+                  });
 
-                // if (captionController.text.isEmpty) {
-                //   setState(() {
-                //     isLoading = true;
-                //   });
-                //   downloadUrl =
-                //       await uploadImageOnDb("ChatRooms", widget.pickedFile);
-                //   setState(() {
-                //     downloadUrl;
-                //   });
-
-                //   if (downloadUrl != null) {
-                //     onImageSend();
-                //   } else {
-                //     setState(() {
-                //       isLoading = false;
-                //     });
-                //   }
-                // } else {
-                //   null;
-                // }
+                  if (downloadUrl.isNotEmpty) {
+                    onImageSend();
+                  } else {
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                } else {
+                  null;
+                }
               },
               child: Container(
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 15),
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                 height: 50,
                 width: 50,
                 decoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: AppColors.lightGreenColor),
+                    shape: BoxShape.circle, color: AppColors.primaryColor),
                 child: isLoading
                     ? const CircularProgressIndicator(
                         color: AppColors.whiteColor,
@@ -149,25 +151,26 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
     );
   }
 
-  // onImageSend() async {
-  //   final database = FirebaseDatabase.instance;
-  //   final auth = FirebaseAuth.instance;
+  onImageSend() async {
+    Map<String, dynamic> bodyData = {
+      "message": downloadUrl,
+      "caption": captionController.text,
+      "senderId": auth.currentUser!.uid,
+      "seen": false,
+      "sentOn": DateTime.now().toIso8601String(),
+      "messageType": "image",
+      "users": [auth.currentUser!.uid, widget.targetUser.userId]
+    };
 
-  //   Map<String, dynamic> bodyData = {
-  //     "message": downloadUrl,
-  //     "caption": captionController.text,
-  //     "senderId": auth.currentUser!.uid,
-  //     "seen": false,
-  //     "sentOn": DateTime.now().toIso8601String(),
-  //     "messageType": "image",
-  //   };
+    captionController.clear();
 
-  //   captionController.clear();
-
-  //   await database.ref("ChatRooms/${widget.chatRoomId}").push().set(bodyData);
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  //   popView(context);
-  // }
+    await database
+        .ref("ChatRooms/${widget.chatRoomId}/Chats/")
+        .push()
+        .set(bodyData);
+    setState(() {
+      isLoading = false;
+    });
+    AppServices.popView(context);
+  }
 }

@@ -14,14 +14,18 @@ Future<String> isChatRoomAvailable(String targetUser) async {
     var targetChatID =
         targetChatRoomList.children.map((e) => e.key.toString()).toList();
     print(targetChatID);
+    print(userChatID);
 
     for (var myroom in userChatID) {
+      print("My Room ID  $myroom");
       for (var targetroom in targetChatID) {
+        print("@nd $myroom");
+        print(targetUser);
         if (myroom == targetroom) {
           print("My Room Checker :::::: $myroom");
           return myroom!;
         } else {
-          return "";
+          continue;
         }
       }
     }

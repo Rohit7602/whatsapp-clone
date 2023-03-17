@@ -1,66 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-
 import '../helper/global_function.dart';
 import '../model/message_model.dart';
 
 class ChatEventListner {
   BuildContext context;
   GetterSetterModel provider;
+
   ChatEventListner({required this.context, required this.provider});
 
-  getChatsMessageList(String chatRoomId) {
-    if (chatRoomId.isNotEmpty) {
-      database.ref("ChatRooms/$chatRoomId/").onChildAdded.listen((event) {
-        var msgValue = event.snapshot.children
-            .map((e) => MessageModel.fromJson(
-                e.value as Map<Object?, Object?>, e.key.toString()))
-            .toList();
+  getChatsMessageList(String chatRoomId) async {
+    provider.removeChatMessages();
+    if (provider.messageModel.isEmpty) {
+      if (chatRoomId.isNotEmpty) {
+        database
+            .ref("ChatRooms/$chatRoomId/Chats")
+            .onChildAdded
+            .listen((event) {
+          // var msgValue = event.snapshot.children
+          //     .map((e) => MessageModel.fromJson(
+          //         event.snapshot.value as Map<Object?, Object?>,
+          //         event.snapshot.key.toString()))
+          //     .toList();
 
-        provider.updateMessageModel(msgValue);
-      });
-    } else {
-      print("Chat ID Empty");
+          var msgValue = MessageModel.fromJson(
+              event.snapshot.value as Map<Object?, Object?>,
+              event.snapshot.key.toString());
+
+          provider.updateMessageModel(msgValue);
+        });
+      }
     }
+  }
 
-    // var msg = event.snapshot.children
-    //     .map((e) => MessageModel.fromJson(
-    //         e.value as Map<Object?, Object?>, e.key.toString()))
-    //     .toList();
+  isSeenMessages(chatRoomId, targetUserId) {
+    database.ref("ChatRooms/$chatRoomId/").onChildAdded.listen(
+      (event) async {
+        if (targetUserId != null) {
+          var eventKey = event.snapshot.children.map((e) => e.value).last;
 
-    // provider.updateMessageModel(msg);
-
-    //     database
-    //         .ref(
-    //             "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}")
-    //         .onValue
-    //         .listen(
-    //       (event) async {
-    //         var eventKey = event.snapshot.children.map((e) => e.key).toList();
-    //         for (var element in eventKey) {
-    //           var recieverId = await database
-    //               .ref(
-    //                   "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}/$element/senderId")
-    //               .get();
-
-    //           if (recieverId.value.toString() != auth.currentUser!.uid) {
-    //             database
-    //                 .ref(
-    //                     "ChatRooms/${createChatRoomId(auth.currentUser!.uid, targetUser)}/$element/")
-    //                 .update({
-    //               "seen": true,
-    //             });
-    //           }
-    //         }
-    //       },
-    //     );
-
-    //     database.ref("users/$targetUser").onValue.listen((event) {
-    //       var eventSnapshot = event.snapshot.children.map((e) => e).toList();
-    //       var getStatus =
-    //           eventSnapshot.firstWhere((element) => element.key == "Status");
-    //       var provider = Provider.of<GetterSetterModel>(context, listen: false);
-    //       provider.getStatus(getStatus.value.toString());
-    //     });
+          // for (var element in eventKey) {
+          //   database.ref("ChatRooms/$chatRoomId/Chats/$element").update({
+          //     "seen": true,
+          //   });
+          // }
+        } else {
+          print("elseCase:::::::");
+        }
+      },
+    );
   }
 }

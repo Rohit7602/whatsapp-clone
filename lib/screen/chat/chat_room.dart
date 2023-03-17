@@ -1,24 +1,26 @@
-// ignore_for_file: must_be_immutable, library_private_types_in_public_api
+// ignore_for_file: must_be_immutable, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/screen/chat/show_chats.dart';
 import '../../database_event/chat_event.dart';
 import '../../function/custom_appbar.dart';
-import '../../function/is_chatroom_available.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
-
-File? getFutureImage;
-TextEditingController? getCaptionController;
+import '../../model/user_model.dart';
 
 class ChatRoomScreen extends StatefulWidget {
-  String targetUser;
-  ChatRoomScreen({super.key, required this.targetUser});
+  UserModel targetUser;
+  String chatRoomId;
+
+  ChatRoomScreen({
+    super.key,
+    required this.targetUser,
+    required this.chatRoomId,
+  });
 
   @override
   _ChatRoomScreenState createState() => _ChatRoomScreenState();
@@ -26,31 +28,41 @@ class ChatRoomScreen extends StatefulWidget {
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   final TextEditingController messageController = TextEditingController();
-  final database = FirebaseDatabase.instance;
-  final auth = FirebaseAuth.instance;
+
   ScrollController? scrollController;
   bool isFieldEmpty = true;
   bool showEmoji = false;
   File? pickedFile;
   bool isLoading = false;
-  String myChatRoomID = "";
 
   @override
   void initState() {
     scrollController = ScrollController();
 
-    initFunction();
+    chatEventListener();
 
     super.initState();
   }
 
-  initFunction() async {
-    await isChatRoomAvailable(widget.targetUser).then((value) {
-      setState(() => myChatRoomID = value);
-      var provider = Provider.of<GetterSetterModel>(context, listen: false);
-      ChatEventListner(context: context, provider: provider)
-          .getChatsMessageList(value);
-    });
+  chatEventListener() async {
+    if (!await rebuild()) return;
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    provider.removeChatRoomId();
+
+    ChatEventListner(context: context, provider: provider)
+        .getChatsMessageList(widget.chatRoomId);
+  }
+
+  Future<bool> rebuild() async {
+    if (!mounted) return false;
+    // if there's a current frame,
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      // wait for the end of that frame.
+      await SchedulerBinding.instance.endOfFrame;
+      if (!mounted) return false;
+    }
+    setState(() {});
+    return true;
   }
 
   @override
@@ -69,18 +81,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           }
         },
         child: Scaffold(
-          // resizeToAvoidBottomInset: true,
           appBar: customAppBar(
               title: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text("Rohit"),
+                  Text(widget.targetUser.name),
                   AppServices.addHeight(2),
-                  Consumer<GetterSetterModel>(
-                    builder: (context, data, child) {
-                      return Text(data.getUserStatus,
-                          style: GetTextTheme.sf10_medium);
-                    },
-                  ),
+                  Text(widget.targetUser.status,
+                      style: GetTextTheme.sf10_medium),
                 ],
               ),
               action: [
@@ -105,13 +113,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 fit: BoxFit.cover,
               ),
               ShowChatOnScreen(
-                showEmoji: showEmoji,
-                isFieldEmpty: isFieldEmpty,
-                messageController: messageController,
-                targetUser: widget.targetUser,
-                pickedFile: pickedFile,
-                chatRoomId: myChatRoomID,
-              )
+                  showEmoji: showEmoji,
+                  isFieldEmpty: isFieldEmpty,
+                  messageController: messageController,
+                  targetUser: widget.targetUser,
+                  pickedFile: pickedFile,
+                  chatRoomId: widget.chatRoomId)
             ],
           ),
         ),
@@ -120,11 +127,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   }
 }
 
-  // if (widget.showEmoji)
+  // if (showEmoji)
         //   SizedBox(
         //     height: 300.h,
         //     child: EmojiPicker(
-        //       textEditingController: widget.messageController,
+        //       textEditingController: messageController,
         //       config: Config(
         //         columns: 7,
         //         emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
@@ -158,7 +165,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   //       getCaptionController!.clear();
 
   //       await database
-  //           .ref("ChatRooms/${widget.targetUser}")
+  //           .ref("ChatRooms/${widget.widget.targetUser}")
   //           .push()
   //           .set(bodyData);
   //       setState(() {

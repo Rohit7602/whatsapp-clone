@@ -101,7 +101,9 @@ class _ImageDialogState extends State<ImageDialog> {
               await database.ref("users/${auth.currentUser!.uid}").get();
 
           var fetchData = UserModel.fromJson(
-              pathUser.value as Map<Object?, Object?>, pathUser.key.toString());
+            pathUser.value as Map<Object?, Object?>,
+            pathUser.key.toString(),
+          );
 
           userProvider.getUserModel(fetchData);
           provider.loadingState(false);

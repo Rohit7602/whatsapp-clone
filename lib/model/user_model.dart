@@ -6,6 +6,7 @@ class UserModel {
   String number;
   String status;
   DateTime userCreatedOn;
+
   UserModel(this.userId, this.name, this.description, this.profileImage,
       this.number, this.status, this.userCreatedOn);
 
@@ -17,6 +18,17 @@ class UserModel {
         status = json["Status"].toString(),
         userCreatedOn = DateTime.parse(json["CreatedOn"].toString());
 }
+
+// class TargetChatRoomId {
+//   String chatId;
+
+//   TargetChatRoomId(this.chatId);
+
+//   TargetChatRoomId.fromJson(Map<Object?, Object?> json)
+//       : chatId = json["ChatId"].toString();
+// }
+
+
 
 // class DataModel {
 //   String userId;

@@ -2,14 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/components/chat_room_list.dart';
-import 'package:whatsapp_clone/database_event/event_listner.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/screen/setting/profile_screen.dart';
 import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
+import '../../function/user_status.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../contact/contact.dart';
+import 'chat_room_list.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
@@ -18,15 +17,22 @@ class HomePageScreen extends StatefulWidget {
   _HomePageScreenState createState() => _HomePageScreenState();
 }
 
-class _HomePageScreenState extends State<HomePageScreen> {
+class _HomePageScreenState extends State<HomePageScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
-    var provider = Provider.of<GetterSetterModel>(context, listen: false);
-
-    DatabaseEventListner(context: context, provider: provider).getAllUsers();
-    DatabaseEventListner(context: context, provider: provider)
-        .fetchChatRoomsEventListner();
+    setUserStatus(context, "online");
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      setUserStatus(context, "online");
+    } else {
+      setUserStatus(context, "offline");
+    }
   }
 
   @override
@@ -75,7 +81,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
             : FloatingActionButton(
                 backgroundColor: AppColors.primaryColor,
                 onPressed: () async {
-                  AppServices.pushTo(context, const ProfileScreen());
+                  // AppServices.pushTo(context, const ProfileScreen());
+                  AppServices.pushTo(context, const ContactScreen());
                 },
                 child: const Icon(Icons.person),
               );
