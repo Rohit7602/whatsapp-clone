@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/model/target_user_model.dart';
+import 'package:whatsapp_clone/model/chatroom_model.dart';
 import '../model/message_model.dart';
 import '../model/user_model.dart';
+
+enum msgState { present, deleteForMe, deleteForEveryone, permanentDeleted }
 
 class GetterSetterModel with ChangeNotifier {
   bool _initializeChatroom = true;
@@ -37,17 +39,49 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  final List<TargetUserModel> _lastMessageModel = [];
-  List<TargetUserModel> get targetUserModel => _lastMessageModel;
-  getLastMesage(TargetUserModel chats) {
-    _lastMessageModel.add(chats);
+  final List<ChatRoomModel> _chatRoomModel = [];
+  List<ChatRoomModel> get chatRoomModel => _chatRoomModel;
+  updateChatRoomModel(ChatRoomModel chats) {
+    _chatRoomModel.add(chats);
+    // if (_chatRoomModel.any((element) => element.messageId == chats.messageId)) {
+    //   return null;
+    // } else {
+    //   print("else Case ");
+    //   _chatRoomModel.add(chats);
+    // }
+
     notifyListeners();
   }
 
-  removeLastMessage() {
-    _lastMessageModel.clear();
+  updateLastMsg(
+      String roomId, String msg, bool isSeen, String type, String time) {
+    var roomIndex =
+        _chatRoomModel.indexWhere((element) => element.chatId == roomId);
+
+    _chatRoomModel[roomIndex].message = msg;
+    _chatRoomModel[roomIndex].seen = isSeen;
+    _chatRoomModel[roomIndex].messageType = type;
+    _chatRoomModel[roomIndex].sentOn = DateTime.parse(time);
     notifyListeners();
   }
+
+  removeChatRoom() {
+    _chatRoomModel.clear();
+
+    notifyListeners();
+  }
+
+  // final List<TargetUserModel> _lastMessageModel = [];
+  // List<TargetUserModel> get targetUserModel => _lastMessageModel;
+  // getLastMesage(TargetUserModel chats) {
+  //   if (_lastMessageModel
+  //       .any((element) => element.messageId == chats.messageId)) {
+  //     null;
+  //   } else {
+  //     _lastMessageModel.add(chats);
+  //   }
+  //   notifyListeners();
+  // }
 
   String _getuserStatus = "";
   String get getUserStatus => _getuserStatus;
@@ -70,11 +104,11 @@ class GetterSetterModel with ChangeNotifier {
 
   // MessageModel? _singleMessageModel;
   // MessageModel get singleMessageModel => _singleMessageModel!;
-  // updateSingleMessage(MessageModel msg) {
-  //   _messageModel.add(msg);
+  updateSingleMessage(MessageModel msg) {
+    _messageModel.add(msg);
 
-  //   notifyListeners();
-  // }
+    notifyListeners();
+  }
 
   removeChatMessages() {
     _messageModel.clear();

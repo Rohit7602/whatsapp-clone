@@ -160,11 +160,11 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
     Map<String, dynamic> bodyData = {
       "message": widget.messageController.text,
       "senderId": auth.currentUser!.uid,
-      "recieverId": widget.targetUser,
+      "msgStatus" : "present",
       "seen": false,
       "sentOn": DateTime.now().toIso8601String(),
       "messageType": "text",
-      "users": [auth.currentUser!.uid, widget.targetUser]
+      "users": [auth.currentUser!.uid, widget.targetUser.userId]
     };
 
     widget.messageController.clear();
@@ -173,6 +173,8 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
     });
 
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
+
+    print("Get Chat Room Id ::: ${provider.getChatRoomId}");
 
     if (provider.getChatRoomId!.isNotEmpty) {
       await database
@@ -208,7 +210,8 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                   "users/${auth.currentUser!.uid}/Mychatrooms/$getMyChatRoomId/")
               .set({"ChatId": getMyChatRoomId});
           await database
-              .ref("users/${widget.targetUser}/Mychatrooms/$getMyChatRoomId/")
+              .ref(
+                  "users/${widget.targetUser.userId}/Mychatrooms/$getMyChatRoomId/")
               .set({"ChatId": getMyChatRoomId});
         });
       }

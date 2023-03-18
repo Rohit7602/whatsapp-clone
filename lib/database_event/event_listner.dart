@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/model/message_model.dart';
 import '../getter_setter/getter_setter.dart';
 import '../helper/global_function.dart';
-import '../model/target_user_model.dart';
+import '../model/chatroom_model.dart';
 import '../model/user_model.dart';
 
 class DatabaseEventListner {
@@ -13,11 +13,13 @@ class DatabaseEventListner {
   DatabaseEventListner({required this.context, required this.provider});
 
   getAllChatRooms() {
+    provider.removeChatRoom();
     database
         .ref("users/${auth.currentUser!.uid}/Mychatrooms/")
         .onChildAdded
         .listen((event) async {
       if (event.snapshot.exists) {
+        // provider.removeLastMessage();
         var getChatrooms =
             event.snapshot.children.map((e) => e.value.toString());
 
@@ -43,13 +45,15 @@ class DatabaseEventListner {
             targetUserData.key.toString(),
           );
 
-          var getUserData = TargetUserModel.fromJson(
-              chatRoomId: chatId,
-              messageId: targetUserData.key.toString(),
-              messageModel: getLastMessage,
-              userModel: getUserModel);
+          var getUserData = getChatroomsData.children
+              .map((e) => ChatRoomModel.fromJson(
+                  json: e.value as Map<Object?, Object?>,
+                  messageId: e.key.toString(),
+                  chatId: chatId,
+                  userModel: getUserModel))
+              .last;
 
-          provider.getLastMesage(getUserData);
+          provider.updateChatRoomModel(getUserData);
         }
       }
     });
@@ -83,3 +87,47 @@ class DatabaseEventListner {
     });
   }
 }
+
+// getAllChatRooms() {
+//   database
+//       .ref("users/${auth.currentUser!.uid}/Mychatrooms/")
+//       .onChildAdded
+//       .listen((event) async {
+//     if (event.snapshot.exists) {
+//       provider.removeLastMessage();
+//       var getChatrooms =
+//           event.snapshot.children.map((e) => e.value.toString());
+
+//       for (var chatId in getChatrooms) {
+//         var getChatroomsData =
+//             await database.ref("ChatRooms/$chatId/Chats/").get();
+//         var getUserList = await database.ref("users").get();
+
+//         var getLastMessage = getChatroomsData.children
+//             .map((e) => MessageModel.fromJson(
+//                 e.value as Map<Object?, Object?>, e.key.toString()))
+//             .toList()
+//             .last;
+
+//         var targetUser = getLastMessage.users
+//             .firstWhere((element) => element != auth.currentUser!.uid);
+
+//         var targetUserData = getUserList.children
+//             .firstWhere((e) => e.key.toString() == targetUser.toString());
+
+//         var getUserModel = UserModel.fromJson(
+//           targetUserData.value as Map<Object?, Object?>,
+//           targetUserData.key.toString(),
+//         );
+
+//         var getUserData = TargetUserModel.fromJson(
+//             chatRoomId: chatId,
+//             messageId: targetUserData.key.toString(),
+//             messageModel: getLastMessage,
+//             userModel: getUserModel);
+
+//         provider.getLastMesage(getUserData);
+//       }
+//     }
+//   });
+// }

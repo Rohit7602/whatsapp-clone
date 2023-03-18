@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
+import '../../helper/global_function.dart';
 import '../../model/user_model.dart';
 import 'components/chat_message_field.dart';
 import 'components/chats_basic.dart';
@@ -54,7 +55,8 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                   .format(DateTime.parse(messageList[index].sentOn.toString()));
 
               return messageList[index].messageType == "text"
-                  ? ShowTextChat(messageList, index, context, dateTime)
+                  ? ShowTextChat(
+                      messageList, index, context, dateTime, widget.chatRoomId)
                   : ShowImageChat(provider, messageList, index, dateTime);
             },
           ),
@@ -86,59 +88,91 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
     );
   }
 
-  Row ShowTextChat(List<MessageModel> messageList, int index,
-      BuildContext context, String dateTime) {
-    return Row(
-      mainAxisAlignment: messageMainAlignment(messageList[index].senderId),
-      children: [
-        Container(
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 100),
-          margin: textMessageMargin(messageList[index].senderId),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          decoration: textMessageDecoration(messageList[index].senderId),
-          child: Wrap(
-            alignment: WrapAlignment.end,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                      onLongPress: () =>
-                          FlutterClipboard.copy(messageList[index].message),
-                      child: Text(messageList[index].message,
-                          style: GetTextTheme.sf14_medium)),
-                  AppServices.addWidth(5),
-                  messageList[index].messageType == "image"
-                      ? const SizedBox()
-                      : Text(
-                          dateTime,
-                          style: GetTextTheme.sf10_regular.copyWith(
-                              fontSize: 8, color: AppColors.greyColor.shade800),
-                        ),
-                  AppServices.addWidth(6),
-                  messageList[index].messageType == "image"
-                      ? const SizedBox()
-                      : isSendIdOrCurrentIdTrue(messageList[index].senderId)
-                          ? messageList[index].seen
-                              ? const Icon(
-                                  Icons.done_all,
-                                  color: AppColors.primaryColor,
-                                  size: 15,
-                                )
-                              : const Icon(
-                                  Icons.check,
-                                  color: AppColors.primaryColor,
-                                  size: 15,
-                                )
-                          : const SizedBox(),
-                ],
-              ),
-            ],
+  Widget ShowTextChat(List<MessageModel> messageList, int index,
+      BuildContext context, String dateTime, String chatRoomId) {
+    bool isDelete = false;
+    return InkWell(
+      onLongPress: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return DeleteChatMessage(
+                msgModel: messageList[index],
+                roomModel: chatRoomId,
+              );
+            });
+        setState(() {
+          isDelete = !isDelete;
+        });
+      },
+      child: Row(
+        mainAxisAlignment: messageMainAlignment(messageList[index].senderId),
+        children: [
+          Container(
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 100),
+            margin: textMessageMargin(messageList[index].senderId),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: textMessageDecoration(messageList[index].senderId),
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                        onLongPress: () =>
+                            FlutterClipboard.copy(messageList[index].message),
+                        child: Text(
+                            getMsgValue(
+                                messageList[index].status, messageList[index]),
+                            style: GetTextTheme.sf14_medium)),
+                    AppServices.addWidth(5),
+                    messageList[index].messageType == "image"
+                        ? const SizedBox()
+                        : Text(
+                            dateTime,
+                            style: GetTextTheme.sf10_regular.copyWith(
+                                fontSize: 8,
+                                color: AppColors.greyColor.shade800),
+                          ),
+                    AppServices.addWidth(6),
+                    messageList[index].messageType == "image"
+                        ? const SizedBox()
+                        : isSendIdOrCurrentIdTrue(messageList[index].senderId)
+                            ? messageList[index].seen
+                                ? const Icon(
+                                    Icons.done_all,
+                                    color: AppColors.primaryColor,
+                                    size: 15,
+                                  )
+                                : const Icon(
+                                    Icons.check,
+                                    color: AppColors.primaryColor,
+                                    size: 15,
+                                  )
+                            : const SizedBox(),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  String getMsgValue(msgState status, MessageModel msg) {
+    if (status == msgState.present) {
+      return msg.message;
+    } else if (status == msgState.deleteForMe &&
+        msg.senderId == auth.currentUser!.uid) {
+      return "This message is deleted by you";
+    } else if (status == msgState.deleteForEveryone) {
+      return "This message is deleted";
+    } else {
+      return "";
+    }
   }
 
   ShowImageChat(GetterSetterModel provider, List<MessageModel> messageList,
@@ -227,4 +261,42 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
       ],
     );
   }
+}
+
+class DeleteChatMessage extends StatelessWidget {
+  MessageModel msgModel;
+  String roomModel;
+
+  DeleteChatMessage({
+    required this.msgModel,
+    required this.roomModel,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var provider = Provider.of<GetterSetterModel>(context);
+    return AlertDialog(
+      title: const Text("Delete Message"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton.icon(
+              onPressed: () {
+                deleteMsg(msgModel, roomModel);
+
+                AppServices.popView(context);
+              },
+              icon: const Icon(Icons.delete),
+              label: const Text("Delete Now"))
+        ],
+      ),
+    );
+  }
+}
+
+deleteMsg(MessageModel msg, String room) async {
+  final path = await database
+      .ref("ChatRooms/$room/Chats/${msg.messageId}")
+      .update({"msgStatus": msgState.deleteForMe.name});
 }

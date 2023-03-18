@@ -32,7 +32,7 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(onPressed: () async {}, icon: const Icon(Icons.more_vert)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
         ],
       ),
       body: Padding(
@@ -87,7 +87,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
                           if (!await rebuild()) return;
 
-                          var getChatRoomId = provider.targetUserModel
+                          var getChatRoomId = provider.chatRoomModel
                               .where((element) =>
                                   element.userModel.number ==
                                   userList[index].number)
@@ -102,7 +102,7 @@ class _ContactScreenState extends State<ContactScreen> {
                               context,
                               ChatRoomScreen(
                                 targetUser: userList[index],
-                                chatRoomId: getChatRoomId.first.chatRoomId,
+                                chatRoomId: getChatRoomId.first.chatId,
                               ),
                             );
                           } else {

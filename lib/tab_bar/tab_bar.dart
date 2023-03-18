@@ -31,10 +31,23 @@ class _HomeTabBarState extends State<HomeTabBar>
   void initState() {
     tabController = TabController(
         initialIndex: widget.currentIndex, vsync: this, length: 4);
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
 
+    // setUserStatus(context, "online");
     super.initState();
   }
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   super.didChangeAppLifecycleState(state);
+  //   if (state == AppLifecycleState.resumed) {
+  //     print("Online");
+  //     setUserStatus(context, "online");
+  //   } else {
+  //     print("Offline");
+  //     setUserStatus(context, "offline");
+  //   }
+  // }
 
   @override
   void dispose() {

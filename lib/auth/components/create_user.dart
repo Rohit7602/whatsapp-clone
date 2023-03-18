@@ -32,6 +32,7 @@ createUser(
         .set(bodyData)
         .then((value) async {
       sharedPrefs!.setBool("isLogin", true);
+      // provider.removeChatRoom();
       DatabaseEventListner(context: context, provider: provider).getAllUsers();
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Register Success")));

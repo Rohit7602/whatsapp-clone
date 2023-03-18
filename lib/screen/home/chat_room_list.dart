@@ -17,14 +17,16 @@ class _ChatRoomListState extends State<ChatRoomList> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<GetterSetterModel>(context);
-    var targetuserModel = provider.targetUserModel;
+    var targetuserModel = provider.chatRoomModel;
     return ListView.separated(
       separatorBuilder: (context, i) => AppServices.addHeight(15),
       shrinkWrap: true,
       itemCount: targetuserModel.length,
       itemBuilder: (context, i) {
-        var dateTime = DateFormat('hh:mm a').format(
-            DateTime.parse(targetuserModel[i].messageModel.sentOn.toString()));
+        var dateTime = DateFormat('hh:mm a')
+            .format(DateTime.parse(targetuserModel[i].sentOn.toString()));
+
+        print(targetuserModel[i].message);
 
         return ListTile(
           onTap: () {
@@ -32,7 +34,7 @@ class _ChatRoomListState extends State<ChatRoomList> {
                 context,
                 ChatRoomScreen(
                     targetUser: targetuserModel[i].userModel,
-                    chatRoomId: targetuserModel[i].chatRoomId));
+                    chatRoomId: targetuserModel[i].chatId));
           },
           leading: Container(
             height: 50,
@@ -58,7 +60,7 @@ class _ChatRoomListState extends State<ChatRoomList> {
           ),
           subtitle: Row(
             children: [
-              targetuserModel[i].messageModel.seen
+              targetuserModel[i].seen
                   ? const Icon(
                       Icons.done_all,
                       color: AppColors.primaryColor,
@@ -72,12 +74,12 @@ class _ChatRoomListState extends State<ChatRoomList> {
               const SizedBox(
                 width: 3,
               ),
-              targetuserModel[i].messageModel.message.isEmpty
+              targetuserModel[i].message.isEmpty
                   ? const Text("Start Chat")
-                  : targetuserModel[i].messageModel.messageType == 'image'
+                  : targetuserModel[i].messageType == 'image'
                       ? const Text("Photo")
-                      : targetuserModel[i].messageModel.messageType == "text"
-                          ? Text(targetuserModel[i].messageModel.message)
+                      : targetuserModel[i].messageType == "text"
+                          ? Text(targetuserModel[i].message)
                           : const Text("coming, soon"),
             ],
           ),

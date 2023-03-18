@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   isLogin() async {
     if (sharedPrefs!.getBool("isLogin") == true) {
       var provider = Provider.of<GetterSetterModel>(context, listen: false);
-      provider.removeLastMessage();
+      provider.removeChatRoom();
 
       DatabaseEventListner(context: context, provider: provider).getAllUsers();
       DatabaseEventListner(context: context, provider: provider)

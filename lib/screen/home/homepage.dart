@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
-import '../../function/user_status.dart';
+import '../../database_event/chat_event.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../contact/contact.dart';
@@ -17,22 +17,12 @@ class HomePageScreen extends StatefulWidget {
   _HomePageScreenState createState() => _HomePageScreenState();
 }
 
-class _HomePageScreenState extends State<HomePageScreen>
-    with WidgetsBindingObserver {
+class _HomePageScreenState extends State<HomePageScreen> {
   @override
   void initState() {
-    setUserStatus(context, "online");
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    ChatEventListner(context: context, provider: provider).getLastMessage();
     super.initState();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
-      setUserStatus(context, "online");
-    } else {
-      setUserStatus(context, "offline");
-    }
   }
 
   @override
@@ -43,7 +33,7 @@ class _HomePageScreenState extends State<HomePageScreen>
         margin: const EdgeInsets.only(top: 15),
         child: Consumer<GetterSetterModel>(
           builder: (context, data, chidl) {
-            return data.targetUserModel.isEmpty
+            return data.chatRoomModel.isEmpty
                 ? CustomAssetImage(context, 300, AppImages.startChat,
                     const EdgeInsets.only(top: 60))
                 : const ChatRoomList();
@@ -57,7 +47,7 @@ class _HomePageScreenState extends State<HomePageScreen>
   Consumer<GetterSetterModel> FloatingIconView() {
     return Consumer<GetterSetterModel>(
       builder: (context, data, child) {
-        return data.targetUserModel.isEmpty
+        return data.chatRoomModel.isEmpty
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

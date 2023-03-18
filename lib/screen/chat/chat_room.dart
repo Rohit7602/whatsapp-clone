@@ -51,6 +51,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
     ChatEventListner(context: context, provider: provider)
         .getChatsMessageList(widget.chatRoomId);
+    ChatEventListner(context: context, provider: provider)
+        .isSeenMessages(widget.chatRoomId, widget.targetUser.userId);
+    // ChatEventListner(context: context, provider: provider)
+    //     .isSeenMessages(widget.chatRoomId, widget.targetUser.userId);
   }
 
   Future<bool> rebuild() async {
@@ -139,44 +143,4 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         //     ),
         //   )
 
- // uploadFutureImageonDB() async {
-  //   if (getCaptionController!.text.isEmpty) {
-  //     setState(() {
-  //       isLoading = true;
-  //     });
-  //     var downloadUrl = await uploadImageOnDb("ChatRooms", getFutureImage);
-  //     setState(() {
-  //       downloadUrl;
-  //     });
-
-  //     if (downloadUrl != null) {
-  //       final database = FirebaseDatabase.instance;
-  //       final auth = FirebaseAuth.instance;
-
-  //       Map<String, dynamic> bodyData = {
-  //         "message": downloadUrl,
-  //         "caption": getCaptionController!.text,
-  //         "senderId": auth.currentUser!.uid,
-  //         "seen": false,
-  //         "sentOn": DateTime.now().toIso8601String(),
-  //         "messageType": "image",
-  //       };
-
-  //       getCaptionController!.clear();
-
-  //       await database
-  //           .ref("ChatRooms/${widget.widget.targetUser}")
-  //           .push()
-  //           .set(bodyData);
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     }
-  //   } else {
-  //     null;
-  //   }
-  // }
+ 
