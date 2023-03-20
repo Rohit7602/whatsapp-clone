@@ -22,6 +22,7 @@ class ShowChatOnScreen extends StatefulWidget {
   UserModel targetUser;
   File? pickedFile;
   String chatRoomId;
+  bool isSelected;
   ShowChatOnScreen(
       {required this.showEmoji,
       required this.isFieldEmpty,
@@ -29,6 +30,7 @@ class ShowChatOnScreen extends StatefulWidget {
       required this.targetUser,
       required this.pickedFile,
       required this.chatRoomId,
+      required this.isSelected,
       super.key});
 
   @override
@@ -90,21 +92,22 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
 
   Widget ShowTextChat(List<MessageModel> messageList, int index,
       BuildContext context, String dateTime, String chatRoomId) {
-    bool isDelete = false;
     return InkWell(
-      onLongPress: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return DeleteChatMessage(
-                msgModel: messageList[index],
-                roomModel: chatRoomId,
-              );
-            });
-        setState(() {
-          isDelete = !isDelete;
-        });
-      },
+      onTap: () {},
+      // onLongPress: () {
+      //   setState(() {
+      //     widget.isSelected = true;
+      //   });
+      //   showDialog(
+      //     context: context,
+      //     builder: (context) {
+      //       return DeleteChatMessage(
+      //         msgModel: messageList[index],
+      //         roomModel: chatRoomId,
+      //       );
+      //     },
+      //   );
+      // },
       child: Row(
         mainAxisAlignment: messageMainAlignment(messageList[index].senderId),
         children: [
@@ -139,19 +142,25 @@ class _ShowChatOnScreenState extends State<ShowChatOnScreen> {
                     AppServices.addWidth(6),
                     messageList[index].messageType == "image"
                         ? const SizedBox()
-                        : isSendIdOrCurrentIdTrue(messageList[index].senderId)
-                            ? messageList[index].seen
-                                ? const Icon(
-                                    Icons.done_all,
-                                    color: AppColors.primaryColor,
-                                    size: 15,
-                                  )
-                                : const Icon(
-                                    Icons.check,
-                                    color: AppColors.primaryColor,
-                                    size: 15,
-                                  )
-                            : const SizedBox(),
+                        : Consumer<GetterSetterModel>(
+                            builder: (context, data, child) {
+                              print(data.messageModel[index].seen);
+                              return isSendIdOrCurrentIdTrue(
+                                      messageList[index].senderId)
+                                  ? data.messageModel[index].seen
+                                      ? const Icon(
+                                          Icons.done_all,
+                                          color: AppColors.primaryColor,
+                                          size: 15,
+                                        )
+                                      : const Icon(
+                                          Icons.check,
+                                          color: AppColors.primaryColor,
+                                          size: 15,
+                                        )
+                                  : const SizedBox();
+                            },
+                          ),
                   ],
                 ),
               ],
@@ -275,7 +284,6 @@ class DeleteChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<GetterSetterModel>(context);
     return AlertDialog(
       title: const Text("Delete Message"),
       content: Column(
@@ -288,7 +296,7 @@ class DeleteChatMessage extends StatelessWidget {
                 AppServices.popView(context);
               },
               icon: const Icon(Icons.delete),
-              label: const Text("Delete Now"))
+              label: const Text("Delete Now")),
         ],
       ),
     );
@@ -296,7 +304,7 @@ class DeleteChatMessage extends StatelessWidget {
 }
 
 deleteMsg(MessageModel msg, String room) async {
-  final path = await database
+  await database
       .ref("ChatRooms/$room/Chats/${msg.messageId}")
       .update({"msgStatus": msgState.deleteForMe.name});
 }

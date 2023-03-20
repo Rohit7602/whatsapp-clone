@@ -43,13 +43,20 @@ class GetterSetterModel with ChangeNotifier {
   List<ChatRoomModel> get chatRoomModel => _chatRoomModel;
   updateChatRoomModel(ChatRoomModel chats) {
     _chatRoomModel.add(chats);
-    // if (_chatRoomModel.any((element) => element.messageId == chats.messageId)) {
-    //   return null;
-    // } else {
-    //   print("else Case ");
-    //   _chatRoomModel.add(chats);
-    // }
 
+    notifyListeners();
+  }
+
+  updateMessageStatus(String roomId, bool isSeen, GetterSetterModel provider) {
+    var msgIndex = provider.messageModel
+        .indexWhere((element) => element.messageId == roomId);
+
+    _messageModel[msgIndex].seen = isSeen;
+    notifyListeners();
+  }
+
+  updateUserStatus(String status, int index) {
+    _chatRoomModel[index].userModel.status = status;
     notifyListeners();
   }
 
@@ -57,7 +64,6 @@ class GetterSetterModel with ChangeNotifier {
       String roomId, String msg, bool isSeen, String type, String time) {
     var roomIndex =
         _chatRoomModel.indexWhere((element) => element.chatId == roomId);
-
     _chatRoomModel[roomIndex].message = msg;
     _chatRoomModel[roomIndex].seen = isSeen;
     _chatRoomModel[roomIndex].messageType = type;
@@ -70,18 +76,6 @@ class GetterSetterModel with ChangeNotifier {
 
     notifyListeners();
   }
-
-  // final List<TargetUserModel> _lastMessageModel = [];
-  // List<TargetUserModel> get targetUserModel => _lastMessageModel;
-  // getLastMesage(TargetUserModel chats) {
-  //   if (_lastMessageModel
-  //       .any((element) => element.messageId == chats.messageId)) {
-  //     null;
-  //   } else {
-  //     _lastMessageModel.add(chats);
-  //   }
-  //   notifyListeners();
-  // }
 
   String _getuserStatus = "";
   String get getUserStatus => _getuserStatus;
@@ -98,14 +92,6 @@ class GetterSetterModel with ChangeNotifier {
     } else {
       _messageModel.add(msg);
     }
-
-    notifyListeners();
-  }
-
-  // MessageModel? _singleMessageModel;
-  // MessageModel get singleMessageModel => _singleMessageModel!;
-  updateSingleMessage(MessageModel msg) {
-    _messageModel.add(msg);
 
     notifyListeners();
   }

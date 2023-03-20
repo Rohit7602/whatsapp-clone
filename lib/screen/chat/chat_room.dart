@@ -51,8 +51,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
     ChatEventListner(context: context, provider: provider)
         .getChatsMessageList(widget.chatRoomId);
+
     ChatEventListner(context: context, provider: provider)
         .isSeenMessages(widget.chatRoomId, widget.targetUser.userId);
+
     // ChatEventListner(context: context, provider: provider)
     //     .isSeenMessages(widget.chatRoomId, widget.targetUser.userId);
   }
@@ -68,6 +70,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     setState(() {});
     return true;
   }
+
+  bool isSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -91,24 +95,48 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 children: [
                   Text(widget.targetUser.name),
                   AppServices.addHeight(2),
-                  Text(widget.targetUser.status,
-                      style: GetTextTheme.sf10_medium),
+                  Consumer<GetterSetterModel>(
+                    builder: (context, data, child) {
+                      return data.chatRoomModel
+                              .where((element) =>
+                                  element.userModel.userId ==
+                                  widget.targetUser.userId)
+                              .isEmpty
+                          ? Text("comming soon..",
+                              style: GetTextTheme.sf10_medium)
+                          : Text(
+                              data.chatRoomModel
+                                  .firstWhere((element) =>
+                                      element.userModel.userId ==
+                                      widget.targetUser.userId)
+                                  .userModel
+                                  .status,
+                              style: GetTextTheme.sf10_medium);
+                    },
+                  ),
                 ],
               ),
-              action: [
-                IconButton(
-                  icon: const Icon(Icons.videocam),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: const Icon(Icons.call),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () {},
-                ),
-              ]),
+              action: isSelected
+                  ? [
+                      IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.arrow_back)),
+                      IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.delete)),
+                    ]
+                  : [
+                      IconButton(
+                        icon: const Icon(Icons.videocam),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.call),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.more_vert),
+                        onPressed: () {},
+                      ),
+                    ]),
           body: Stack(
             fit: StackFit.expand,
             children: [
@@ -117,12 +145,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 fit: BoxFit.cover,
               ),
               ShowChatOnScreen(
-                  showEmoji: showEmoji,
-                  isFieldEmpty: isFieldEmpty,
-                  messageController: messageController,
-                  targetUser: widget.targetUser,
-                  pickedFile: pickedFile,
-                  chatRoomId: widget.chatRoomId)
+                showEmoji: showEmoji,
+                isFieldEmpty: isFieldEmpty,
+                messageController: messageController,
+                targetUser: widget.targetUser,
+                pickedFile: pickedFile,
+                chatRoomId: widget.chatRoomId,
+                isSelected: isSelected,
+              )
             ],
           ),
         ),

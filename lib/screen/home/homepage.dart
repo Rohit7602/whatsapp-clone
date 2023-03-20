@@ -29,8 +29,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Container(
-        margin: const EdgeInsets.only(top: 15),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 15),
         child: Consumer<GetterSetterModel>(
           builder: (context, data, chidl) {
             return data.chatRoomModel.isEmpty

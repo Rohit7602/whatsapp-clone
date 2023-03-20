@@ -15,7 +15,7 @@ class AppColors {
   static const blackColor = Colors.black;
   static const redColor = Colors.red;
   static const blueColor = Colors.blue;
-  static const lightGreenColor = Color(0xff00A884);
+  static const lightGreenColor = Colors.green;
   static const darkGreenColor = Color(0xff005C4B);
   static const chatTileColor = Color(0xfffff6c3);
 }

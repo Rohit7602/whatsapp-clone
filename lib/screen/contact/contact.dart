@@ -7,6 +7,7 @@ import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../chat/chat_room.dart';
+import '../temp_scren.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({super.key});
@@ -107,12 +108,19 @@ class _ContactScreenState extends State<ContactScreen> {
                             );
                           } else {
                             print("run second Case");
+
                             AppServices.pushTo(
                                 context,
-                                ChatRoomScreen(
+                                TemporaryScreen(
+                                  chatroomId: "",
                                   targetUser: userList[index],
-                                  chatRoomId: "",
                                 ));
+                            // AppServices.pushTo(
+                            //     context,
+                            //     ChatRoomScreen(
+                            //       targetUser: userList[index],
+                            //       chatRoomId: "",
+                            //     ));
                           }
                         },
                         leading: Container(

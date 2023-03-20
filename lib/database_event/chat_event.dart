@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import '../helper/global_function.dart';
@@ -27,30 +29,56 @@ class ChatEventListner {
     }
   }
 
+  // getChatsList(String chatRoomId) async {
+  //   provider.removeChatMessages();
+  //   print("@nd List ");
+  //   if (provider.messageModel.isEmpty) {
+  //     if (chatRoomId.isNotEmpty) {
+  //       print("@3rd List ");
+  //       database
+  //           .ref("ChatRooms/$chatRoomId/Chats/")
+  //           .onChildChanged
+  //           .listen((event) {
+  //         var msgValue = MessageModel.fromJson(
+  //             event.snapshot.value as Map<Object?, Object?>,
+  //             event.snapshot.key.toString());
+
+  //         provider.updateMessageModel(msgValue);
+  //       });
+  //     }
+  //   }
+  // }
+
   isSeenMessages(chatRoomId, targetUserId) {
-    database.ref("ChatRooms/$chatRoomId/Chats").onValue.listen(
+    print(chatRoomId);
+    database.ref("ChatRooms/$chatRoomId/Chats").onChildChanged.listen(
       (event) async {
+        print(event.snapshot.key.toString());
         if (event.snapshot.exists) {
-          var eventData = event.snapshot.children.map((e) => e.key);
-          var eventKey = event.snapshot.children.map((e) => e.key).last;
+          print("Event Snapshot :::: ${event.snapshot.value}");
+          // var msgKey = event.snapshot.children.map((e) => e.key);
 
-          var eventValue = event.snapshot.children.map((e) => e.value).last;
+          // var eventKey = event.snapshot.children.map((e) => e.key).last;
 
-          var msgModel = MessageModel.fromJson(
-              eventValue as Map<Object?, Object?>, eventKey.toString());
+          // var eventValue = event.snapshot.children.map((e) => e.value).last;
 
-          print("sernder Id");
-          print(msgModel.senderId);
-          print("targetUser Id");
-          print(targetUserId);
+          // var msgModel = MessageModel.fromJson(
+          //     eventValue as Map<Object?, Object?>, eventKey.toString());
 
-          if (msgModel.senderId == targetUserId) {
-            for (var element in eventData) {
-              database.ref("ChatRooms/$chatRoomId/Chats/$element/").update({
-                "seen": true,
-              });
-            }
-          }
+          // if (msgModel.senderId == targetUserId) {
+          //   for (var elements in msgKey) {
+          //     database.ref("ChatRooms/$chatRoomId/Chats/$elements/").update({
+          //       "seen": true,
+          //     });
+
+          //     // var msgIndex = provider.messageModel
+          //     //     .indexWhere((element) => element.messageId == elements);
+
+          //     // print("Message Index Checker $msgIndex ");
+
+          //     provider.updateMessageStatus(elements!, true, provider);
+          //   }
+          // }
         } else {
           print("Event Data Not Exist");
         }

@@ -1,11 +1,17 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable, avoid_print, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/app_config.dart';
 import 'package:whatsapp_clone/auth/register_view.dart';
+import 'package:whatsapp_clone/database_event/event_listner.dart';
+import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/helper/global_function.dart';
 import 'package:whatsapp_clone/splash.dart';
 import 'package:whatsapp_clone/function/snackbar.dart';
+import '../function/user_status.dart';
 import '../helper/base_getters.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
@@ -31,23 +37,44 @@ class _HomeTabBarState extends State<HomeTabBar>
   void initState() {
     tabController = TabController(
         initialIndex: widget.currentIndex, vsync: this, length: 4);
-    // WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
-    // setUserStatus(context, "online");
+    setUserStatus(context, "online");
     super.initState();
+
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    final path = database.ref("users");
+    path.onChildChanged.listen((event) =>
+        DatabaseEventListner(context: context, provider: provider)
+            .updateUserStatus(event));
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   super.didChangeAppLifecycleState(state);
-  //   if (state == AppLifecycleState.resumed) {
-  //     print("Online");
-  //     setUserStatus(context, "online");
-  //   } else {
-  //     print("Offline");
-  //     setUserStatus(context, "offline");
-  //   }
-  // }
+  chatRoomEventListner() async {
+    if (!await rebuild()) return;
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    DatabaseEventListner(context: context, provider: provider)
+        .getAllChatRooms();
+  }
+
+  Future<bool> rebuild() async {
+    if (!mounted) return false;
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      await SchedulerBinding.instance.endOfFrame;
+      if (!mounted) return false;
+    }
+    setState(() {});
+    return true;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      setUserStatus(context, "online");
+    } else {
+      setUserStatus(context, "offline");
+    }
+  }
 
   @override
   void dispose() {

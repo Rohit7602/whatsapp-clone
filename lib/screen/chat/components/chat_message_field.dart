@@ -99,9 +99,27 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                               ),
                             ),
                             AppServices.addWidth(10),
-                            const Icon(
-                              Icons.camera_alt,
-                              color: AppColors.whiteColor,
+                            InkWell(
+                              onTap: () async {
+                                widget.pickedFile = await pickImageWithCamera();
+
+                                setState(() {
+                                  widget.pickedFile;
+                                });
+
+                                AppServices.pushTo(
+                                  context,
+                                  ChatImagePreview(
+                                    chatRoomId: widget.chatRoomId,
+                                    pickedFile: widget.pickedFile,
+                                    targetUser: widget.targetUser,
+                                  ),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: AppColors.whiteColor,
+                              ),
                             ),
                           ],
                         )
@@ -160,7 +178,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
     Map<String, dynamic> bodyData = {
       "message": widget.messageController.text,
       "senderId": auth.currentUser!.uid,
-      "msgStatus" : "present",
+      "msgStatus": "present",
       "seen": false,
       "sentOn": DateTime.now().toIso8601String(),
       "messageType": "text",
@@ -173,8 +191,6 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
     });
 
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
-
-    print("Get Chat Room Id ::: ${provider.getChatRoomId}");
 
     if (provider.getChatRoomId!.isNotEmpty) {
       await database
