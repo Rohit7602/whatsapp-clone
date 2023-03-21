@@ -74,7 +74,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   // AppServices.pushTo(context, const ProfileScreen());
                   AppServices.pushTo(context, const ContactScreen());
                 },
-                child: const Icon(Icons.person),
+                child: const Icon(Icons.chat),
               );
       },
     );

@@ -8,7 +8,6 @@ import '../../helper/styles/app_style_sheet.dart';
 class SecondaryTextFieldView extends StatelessWidget {
   TextEditingController? controller;
   dynamic suffixIcon;
-
   String hintText;
   String fieldEmptyError;
   Function(String)? onChange;

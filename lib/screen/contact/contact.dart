@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/screen/group_chat/add_members.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../chat/chat_room.dart';
@@ -42,6 +43,8 @@ class _ContactScreenState extends State<ContactScreen> {
           children: [
             AppServices.addHeight(10),
             ListTile(
+              onTap: () =>
+                  AppServices.pushTo(context, const AddMembersGroupScreen()),
               leading: Container(
                   height: 50,
                   width: 50,
