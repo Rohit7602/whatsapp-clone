@@ -58,3 +58,26 @@ BorderRadius isMessageCircular(senderId) {
         : const Radius.circular(0),
   );
 }
+
+// getChatRoomId(BuildContext context, String chatRoomId) {
+//   var provider = Provider.of<GetterSetterModel>(context, listen: false);
+//   if (!mounted) {
+    
+//   }
+//   if (chatRoomId.isNotEmpty) {
+//     provider.updateShowMessage(true);
+
+//     print("1st Case ");
+
+//     return database.ref("ChatRooms/$chatRoomId/Chats");
+//   } else if (provider.getChatRoomId != null) {
+//     provider.updateShowMessage(true);
+
+//     print("2nd  Case ");
+
+//     return database.ref("ChatRooms/${provider.getChatRoomId}/Chats");
+//   } else {
+//     print("3rd Case ");
+//     provider.updateShowMessage(false);
+//   }
+// }

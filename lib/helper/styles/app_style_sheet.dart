@@ -31,6 +31,7 @@ class AppImages {
   static const startChat = "asset/homepage/start_chat.jpg";
   static const whatsappBG = "asset/whatsapp_bg/whatsapp_bg.png";
   static const appLogo = "asset/logo/logo.png";
+  static const photoIcon = "asset/chats/photo.png";
 }
 
 // all the text themes used in the app are stored in GetTextTheme

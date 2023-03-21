@@ -165,9 +165,11 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
     captionController.clear();
 
     await database
-        .ref("ChatRooms/${widget.chatRoomId}/Chats/")
+        .ref("ChatRooms/${widget.chatRoomId}")
+        .child("Chats/")
         .push()
         .set(bodyData);
+
     setState(() {
       isLoading = false;
     });

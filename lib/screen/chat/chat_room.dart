@@ -2,11 +2,9 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/screen/chat/show_chats.dart';
-import '../../database_event/chat_event.dart';
 import '../../function/custom_appbar.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
@@ -34,47 +32,20 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   bool showEmoji = false;
   File? pickedFile;
   bool isLoading = false;
+  bool isShowMessage = false;
+  bool isSelected = false;
 
   @override
   void initState() {
-    scrollController = ScrollController();
-
-    chatEventListener();
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    provider.updateChatRoomId("");
 
     super.initState();
   }
 
-  chatEventListener() async {
-    if (!await rebuild()) return;
-    var provider = Provider.of<GetterSetterModel>(context, listen: false);
-    provider.removeChatRoomId();
-
-    ChatEventListner(context: context, provider: provider)
-        .getChatsMessageList(widget.chatRoomId);
-
-    ChatEventListner(context: context, provider: provider)
-        .isSeenMessages(widget.chatRoomId, widget.targetUser.userId);
-
-    // ChatEventListner(context: context, provider: provider)
-    //     .isSeenMessages(widget.chatRoomId, widget.targetUser.userId);
-  }
-
-  Future<bool> rebuild() async {
-    if (!mounted) return false;
-    // if there's a current frame,
-    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
-      // wait for the end of that frame.
-      await SchedulerBinding.instance.endOfFrame;
-      if (!mounted) return false;
-    }
-    setState(() {});
-    return true;
-  }
-
-  bool isSelected = false;
-
   @override
   Widget build(BuildContext context) {
+    // getChatRoomId(context, widget.chatRoomId);
     return GestureDetector(
       onTap: () => AppServices.keyboardUnfocus(context),
       child: WillPopScope(
@@ -152,6 +123,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 pickedFile: pickedFile,
                 chatRoomId: widget.chatRoomId,
                 isSelected: isSelected,
+                isShowMessage: isShowMessage,
               )
             ],
           ),

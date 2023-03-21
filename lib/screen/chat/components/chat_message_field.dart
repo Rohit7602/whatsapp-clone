@@ -9,7 +9,7 @@ import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../../../helper/global_function.dart';
 import '../../../helper/styles/app_style_sheet.dart';
 import '../../../model/user_model.dart';
-import '../chat_image_preview.dart';
+import '../send_image_preview.dart';
 
 class ChatMessageTextField extends StatefulWidget {
   bool showEmoji;
@@ -18,6 +18,7 @@ class ChatMessageTextField extends StatefulWidget {
   UserModel targetUser;
   File? pickedFile;
   String chatRoomId;
+
   ChatMessageTextField(
       {required this.showEmoji,
       required this.isFieldEmpty,
@@ -79,19 +80,27 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                           children: [
                             InkWell(
                               onTap: () async {
-                                widget.pickedFile =
-                                    await pickImageWithGallery();
-                                setState(() {
-                                  widget.pickedFile;
-                                });
-
-                                AppServices.pushTo(
+                                File pickedFile = await pickImageWithGallery();
+                                var provider = Provider.of<GetterSetterModel>(
                                     context,
-                                    ChatImagePreview(
-                                      chatRoomId: widget.chatRoomId,
-                                      pickedFile: widget.pickedFile,
-                                      targetUser: widget.targetUser,
-                                    ));
+                                    listen: false);
+                                if (widget.chatRoomId.isNotEmpty) {
+                                  AppServices.pushTo(
+                                      context,
+                                      ChatImagePreview(
+                                        chatRoomId: widget.chatRoomId,
+                                        pickedFile: pickedFile,
+                                        targetUser: widget.targetUser,
+                                      ));
+                                } else {
+                                  AppServices.pushTo(
+                                      context,
+                                      ChatImagePreview(
+                                        chatRoomId: provider.getChatRoomId,
+                                        pickedFile: pickedFile,
+                                        targetUser: widget.targetUser,
+                                      ));
+                                }
                               },
                               child: const Icon(
                                 Icons.attach_file_outlined,
@@ -101,20 +110,29 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                             AppServices.addWidth(10),
                             InkWell(
                               onTap: () async {
-                                widget.pickedFile = await pickImageWithCamera();
-
-                                setState(() {
-                                  widget.pickedFile;
-                                });
-
-                                AppServices.pushTo(
-                                  context,
-                                  ChatImagePreview(
-                                    chatRoomId: widget.chatRoomId,
-                                    pickedFile: widget.pickedFile,
-                                    targetUser: widget.targetUser,
-                                  ),
-                                );
+                                var provider = Provider.of<GetterSetterModel>(
+                                    context,
+                                    listen: false);
+                                File pickedImage = await pickImageWithCamera();
+                                if (widget.chatRoomId.isNotEmpty) {
+                                  AppServices.pushTo(
+                                    context,
+                                    ChatImagePreview(
+                                      chatRoomId: widget.chatRoomId,
+                                      pickedFile: pickedImage,
+                                      targetUser: widget.targetUser,
+                                    ),
+                                  );
+                                } else {
+                                  AppServices.pushTo(
+                                    context,
+                                    ChatImagePreview(
+                                      chatRoomId: provider.getChatRoomId,
+                                      pickedFile: pickedImage,
+                                      targetUser: widget.targetUser,
+                                    ),
+                                  );
+                                }
                               },
                               child: const Icon(
                                 Icons.camera_alt,
@@ -178,7 +196,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
     Map<String, dynamic> bodyData = {
       "message": widget.messageController.text,
       "senderId": auth.currentUser!.uid,
-      "msgStatus": "present",
+      // "msgStatus": "present",
       "seen": false,
       "sentOn": DateTime.now().toIso8601String(),
       "messageType": "text",
@@ -192,7 +210,8 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
 
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
 
-    if (provider.getChatRoomId!.isNotEmpty) {
+    if (provider.getChatRoomId.isNotEmpty) {
+      print("ifCase ");
       await database
           .ref("ChatRooms/${provider.getChatRoomId}")
           .child("Chats/")
@@ -200,12 +219,14 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
           .set(bodyData);
     } else {
       if (widget.chatRoomId.isNotEmpty) {
+        print("2nd Case");
         await database
             .ref("ChatRooms/${widget.chatRoomId}")
             .child("Chats/")
             .push()
             .set(bodyData);
       } else {
+        print("else  Case");
         await database
             .ref("ChatRooms/")
             .push()
@@ -217,6 +238,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
 
           var getMyChatRoomId =
               getChatRoom.children.map((e) => e.key.toString()).toList().last;
+
           setState(() {
             provider.updateChatRoomId(getMyChatRoomId);
           });

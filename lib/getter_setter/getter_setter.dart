@@ -101,8 +101,8 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  String? _getChatRoomId;
-  String? get getChatRoomId => _getChatRoomId;
+  String _getChatRoomId = "";
+  String get getChatRoomId => _getChatRoomId;
   updateChatRoomId(String id) {
     _getChatRoomId = id;
     notifyListeners();

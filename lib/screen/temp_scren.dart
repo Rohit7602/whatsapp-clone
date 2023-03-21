@@ -8,7 +8,6 @@ import 'package:whatsapp_clone/helper/global_function.dart';
 import 'package:whatsapp_clone/helper/styles/app_style_sheet.dart';
 import 'package:whatsapp_clone/model/user_model.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
-
 import '../getter_setter/getter_setter.dart';
 
 class TemporaryScreen extends StatefulWidget {
@@ -23,27 +22,53 @@ class TemporaryScreen extends StatefulWidget {
 
 class _TemporaryScreenState extends State<TemporaryScreen> {
   final msgController = TextEditingController();
+
+  bool isChatShow = false;
+
   getRoomId() {
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
     if (widget.chatroomId.isNotEmpty) {
       print("ifCase");
+
+      print(widget.chatroomId);
+      setState(() {
+        isChatShow = true;
+      });
+
       return database.ref("ChatRooms/${widget.chatroomId}/Chats");
-    } else {
+    } else if (provider.getChatRoomId != null) {
       print("else Case");
+
+      print(provider.getChatRoomId);
+
+      setState(() {
+        isChatShow = true;
+      });
+
       return database.ref("ChatRooms/${provider.getChatRoomId}/Chats");
+    } else {
+      setState(() {
+        isChatShow = false;
+      });
     }
+  }
+
+  @override
+  void initState() {
+    getRoomId();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<GetterSetterModel>(context);
-    print(provider.getChatRoomId);
+    print(getRoomId());
     return Scaffold(
       appBar: AppBar(title: const Text("Chatting screen")),
       body: SafeArea(
         child: Column(
           children: [
-            widget.chatroomId.isEmpty
+            !isChatShow
                 ? Container(
                     height: 100,
                     width: 100,
@@ -51,23 +76,7 @@ class _TemporaryScreenState extends State<TemporaryScreen> {
                   )
                 : FirebaseAnimatedList(
                     shrinkWrap: true,
-                    query: database.ref("ChatRooms/${widget.chatroomId}/Chats"),
-                    itemBuilder: (context, snapshot, animation, i) {
-                      final object = snapshot.value as Map<Object?, Object?>;
-                      return Text(object['message'].toString());
-                    },
-                  ),
-            AppServices.addHeight(30),
-            provider.getChatRoomId == null
-                ? Container(
-                    height: 100,
-                    width: 100,
-                    color: Colors.amber,
-                  )
-                : FirebaseAnimatedList(
-                    shrinkWrap: true,
-                    query: database
-                        .ref("ChatRooms/${provider.getChatRoomId}/Chats"),
+                    query: getRoomId(),
                     itemBuilder: (context, snapshot, animation, i) {
                       final object = snapshot.value as Map<Object?, Object?>;
                       return Text(object['message'].toString());

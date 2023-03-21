@@ -28,7 +28,10 @@ class _SplashScreenState extends State<SplashScreen> {
           .getAllChatRooms();
 
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => HomeTabBar()),
+          MaterialPageRoute(
+              builder: (context) => HomeTabBar(
+                    currentIndex: 1,
+                  )),
           (route) => false);
     } else {
       Navigator.of(context).pushAndRemoveUntil(

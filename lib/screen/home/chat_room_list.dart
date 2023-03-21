@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
+import '../chat/chat_room.dart';
 
 class ChatRoomList extends StatefulWidget {
   const ChatRoomList({super.key});
@@ -25,15 +26,17 @@ class _ChatRoomListState extends State<ChatRoomList> {
         var dateTime = DateFormat('hh:mm a')
             .format(DateTime.parse(targetuserModel[i].sentOn.toString()));
 
+        targetuserModel.sort((a, b) => b.sentOn.compareTo(a.sentOn));
+
         return ListTile(
           onTap: () {
             // AppServices.pushTo(context,
             //     TemporaryScreen(chatroomId: targetuserModel[i].chatId));
-            // AppServices.pushTo(
-            //     context,
-            //     ChatRoomScreen(
-            //         targetUser: targetuserModel[i].userModel,
-            //         chatRoomId: targetuserModel[i].chatId));
+            AppServices.pushTo(
+                context,
+                ChatRoomScreen(
+                    targetUser: targetuserModel[i].userModel,
+                    chatRoomId: targetuserModel[i].chatId));
           },
           leading: Stack(
             alignment: AlignmentDirectional.bottomEnd,
@@ -99,7 +102,14 @@ class _ChatRoomListState extends State<ChatRoomList> {
               targetuserModel[i].message.isEmpty
                   ? const Text("Start Chat")
                   : targetuserModel[i].messageType == 'image'
-                      ? const Text("Photo")
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(AppImages.photoIcon, width: 15),
+                            AppServices.addWidth(5),
+                            const Text("Photo"),
+                          ],
+                        )
                       : targetuserModel[i].messageType == "text"
                           ? Text(targetuserModel[i].message)
                           : const Text("coming, soon"),
