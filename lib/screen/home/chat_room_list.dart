@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/screen/group_chat/group_screen/group_chatroom.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../chat/chat_room.dart';
@@ -26,62 +27,68 @@ class _ChatRoomListState extends State<ChatRoomList> {
         var dateTime = DateFormat('hh:mm a')
             .format(DateTime.parse(targetuserModel[i].sentOn.toString()));
 
-        targetuserModel.sort((a, b) => b.sentOn.compareTo(a.sentOn));
-
         return ListTile(
           onTap: () {
-            // AppServices.pushTo(context,
-            //     TemporaryScreen(chatroomId: targetuserModel[i].chatId));
-            AppServices.pushTo(
-                context,
-                ChatRoomScreen(
-                    targetUser: targetuserModel[i].userModel,
-                    chatRoomId: targetuserModel[i].chatId));
+            targetuserModel[i].userModel == null
+                ? AppServices.pushTo(
+                    context,
+                    GroupChatRoomScreen(
+                        groupName: targetuserModel[i].groupModel!.groupName,
+                        groupId: targetuserModel[i].groupModel!.groupId))
+                : AppServices.pushTo(
+                    context,
+                    ChatRoomScreen(
+                        targetUser: targetuserModel[i].userModel!,
+                        chatRoomId: targetuserModel[i].chatId.isEmpty
+                            ? targetuserModel[i].groupModel!.groupId
+                            : targetuserModel[i].chatId));
           },
           leading: Stack(
             alignment: AlignmentDirectional.bottomEnd,
             children: [
               Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        color: AppColors.greyColor.shade200, width: 1.2),
-                    shape: BoxShape.circle,
-                    color: AppColors.lightGreyColor),
-                child: targetuserModel[i].userModel.profileImage.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          targetuserModel[i].userModel.profileImage,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.person,
-                        size: 35,
-                        color: AppColors.whiteColor,
-                      ),
-              ),
-              targetuserModel[i].userModel.status == "online"
-                  ? Positioned(
-                      bottom: 3,
-                      child: Container(
-                        height: 12,
-                        width: 12,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: AppColors.greyColor.shade200,
-                                width: 1.5),
-                            shape: BoxShape.circle,
-                            color: AppColors.lightGreenColor),
-                      ),
-                    )
-                  : const SizedBox(),
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: AppColors.greyColor.shade200, width: 1.2),
+                      shape: BoxShape.circle,
+                      color: AppColors.lightGreyColor),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: targetuserModel[i].userModel != null
+                          ? Image.network(
+                              targetuserModel[i].userModel!.profileImage,
+                              fit: BoxFit.cover,
+                            )
+                          : targetuserModel[i].groupModel != null
+                              ? Image.network(
+                                  targetuserModel[i].groupModel!.groupImage,
+                                )
+                              : const Icon(Icons.person))),
+              targetuserModel[i].userModel == null
+                  ? const SizedBox()
+                  : targetuserModel[i].userModel!.status == "online"
+                      ? Positioned(
+                          bottom: 3,
+                          child: Container(
+                            height: 12,
+                            width: 12,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: AppColors.greyColor.shade200,
+                                    width: 1.5),
+                                shape: BoxShape.circle,
+                                color: AppColors.lightGreenColor),
+                          ),
+                        )
+                      : const SizedBox(),
             ],
           ),
           title: Text(
-            targetuserModel[i].userModel.number,
+            targetuserModel[i].userModel == null
+                ? targetuserModel[i].groupModel!.groupName
+                : targetuserModel[i].userModel!.number,
           ),
           subtitle: Row(
             children: [

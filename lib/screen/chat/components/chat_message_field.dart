@@ -200,7 +200,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
       "seen": false,
       "sentOn": DateTime.now().toIso8601String(),
       "messageType": "text",
-      "users": [auth.currentUser!.uid, widget.targetUser.userId]
+      // "users": [auth.currentUser!.uid, widget.targetUser.userId]
     };
 
     widget.messageController.clear();
@@ -222,7 +222,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
         print("2nd Case");
         await database
             .ref("ChatRooms/${widget.chatRoomId}")
-            .child("Chats/")
+            .child("Chats")
             .push()
             .set(bodyData);
       } else {
@@ -239,17 +239,21 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
           var getMyChatRoomId =
               getChatRoom.children.map((e) => e.key.toString()).toList().last;
 
+          await database.ref("ChatRooms/$getMyChatRoomId/Members/").update({
+            "users": [auth.currentUser!.uid, widget.targetUser.userId]
+          });
+
           setState(() {
             provider.updateChatRoomId(getMyChatRoomId);
           });
 
           await database
               .ref(
-                  "users/${auth.currentUser!.uid}/Mychatrooms/$getMyChatRoomId/")
+                  "users/${auth.currentUser!.uid}/Mychatrooms/Individual/$getMyChatRoomId/")
               .set({"ChatId": getMyChatRoomId});
           await database
               .ref(
-                  "users/${widget.targetUser.userId}/Mychatrooms/$getMyChatRoomId/")
+                  "users/${widget.targetUser.userId}/Mychatrooms/Individual/$getMyChatRoomId/")
               .set({"ChatId": getMyChatRoomId});
         });
       }

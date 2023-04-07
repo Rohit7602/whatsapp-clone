@@ -6,7 +6,7 @@ import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../../getter_setter/getter_setter.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../../model/user_model.dart';
-import 'create_group_name.dart';
+import 'create_group.dart';
 
 class AddMembersGroupScreen extends StatefulWidget {
   const AddMembersGroupScreen({super.key});
@@ -174,21 +174,16 @@ class _AddMembersGroupScreenState extends State<AddMembersGroupScreen> {
                             ),
                             groupUser.any((element) =>
                                     element.number == userList[index].number)
-                                ? InkWell(
-                                    onTap: () => setState(() {
-                                      groupUser.remove(groupUser[index]);
-                                    }),
-                                    child: Container(
-                                      height: 18,
-                                      width: 18,
-                                      decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: AppColors.primaryColor),
-                                      child: const Icon(
-                                        Icons.check,
-                                        color: AppColors.whiteColor,
-                                        size: 15,
-                                      ),
+                                ? Container(
+                                    height: 18,
+                                    width: 18,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AppColors.primaryColor),
+                                    child: const Icon(
+                                      Icons.check,
+                                      color: AppColors.whiteColor,
+                                      size: 15,
                                     ),
                                   )
                                 : const SizedBox()
@@ -210,7 +205,7 @@ class _AddMembersGroupScreenState extends State<AddMembersGroupScreen> {
           ],
         ),
       ),
-      floatingActionButton: groupUser.length >= 2
+      floatingActionButton: groupUser.length >= 3
           ? FloatingActionButton(
               backgroundColor: AppColors.primaryColor,
               onPressed: () => AppServices.pushTo(

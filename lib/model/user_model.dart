@@ -6,6 +6,7 @@ class UserModel {
   String number;
   String status;
   DateTime userCreatedOn;
+  
 
   UserModel(this.userId, this.name, this.description, this.profileImage,
       this.number, this.status, this.userCreatedOn);

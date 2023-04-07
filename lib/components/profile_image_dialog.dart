@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/components/show_loading.dart';
 import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../getter_setter/getter_setter.dart';
@@ -22,7 +21,6 @@ class ImageDialog extends StatefulWidget {
 class _ImageDialogState extends State<ImageDialog> {
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<GetterSetterModel>(context);
     return AlertDialog(
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -56,25 +54,15 @@ class _ImageDialogState extends State<ImageDialog> {
               ),
               Flexible(
                 flex: 3,
-                child: provider.isLoading
-                    ? showLoading()
-                    : IconButton(
-                        onPressed: () async {
-                          provider.loadingState(false);
-                          if (widget.imageFile!.path.isNotEmpty) {
-                            provider.loadingState(true);
-                            uploadImage();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Please enter name"),
-                              ),
-                            );
-                            provider.loadingState(false);
-                          }
-                        },
-                        icon: const Icon(Icons.check),
-                      ),
+                child: IconButton(
+                  onPressed: () async {
+                    if (widget.imageFile!.path.isNotEmpty) {
+                      Navigator.of(context).pop(widget.imageFile);
+                      // AppServices.popView(context);
+                    }
+                  },
+                  icon: const Icon(Icons.check),
+                ),
               ),
             ],
           ),

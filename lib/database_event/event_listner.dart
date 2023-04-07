@@ -2,10 +2,10 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/model/message_model.dart';
 import '../getter_setter/getter_setter.dart';
 import '../helper/global_function.dart';
 import '../model/chatroom_model.dart';
+import '../model/group_model.dart';
 import '../model/user_model.dart';
 
 class DatabaseEventListner {
@@ -16,7 +16,7 @@ class DatabaseEventListner {
   getAllChatRooms() {
     provider.removeChatRoom();
     database
-        .ref("users/${auth.currentUser!.uid}/Mychatrooms/")
+        .ref("users/${auth.currentUser!.uid}/Mychatrooms/Individual/")
         .onChildAdded
         .listen(
       (event) async {
@@ -26,37 +26,85 @@ class DatabaseEventListner {
               event.snapshot.children.map((e) => e.value.toString());
 
           for (var chatId in getChatrooms) {
-            var getChatroomsData =
+            var getMembersList =
+                await database.ref("ChatRooms/$chatId/Members/users").get();
+            var getChatRooms =
                 await database.ref("ChatRooms/$chatId/Chats/").get();
             var getUserList = await database.ref("users").get();
 
-            if (getChatroomsData.children.isNotEmpty) {
-              var getLastMessage = getChatroomsData.children
-                  .map((e) => MessageModel.fromJson(
-                      e.value as Map<Object?, Object?>, e.key.toString()))
-                  .toList()
-                  .last;
+            print(getMembersList.children.map((e) => e.value));
 
-              var targetUser = getLastMessage.users
-                  .firstWhere((element) => element != auth.currentUser!.uid);
+            if (getMembersList.children.isNotEmpty) {
+              var targetUser = getMembersList.children.firstWhere((element) =>
+                  element.value.toString() != auth.currentUser!.uid);
 
-              var targetUserData = getUserList.children
-                  .firstWhere((e) => e.key.toString() == targetUser.toString());
+              var targetUserData = getUserList.children.firstWhere(
+                  (e) => e.key.toString() == targetUser.value.toString());
 
               var getUserModel = UserModel.fromJson(
                 targetUserData.value as Map<Object?, Object?>,
                 targetUserData.key.toString(),
               );
 
-              var getUserData = getChatroomsData.children
+              var getMember =
+                  getMembersList.children.map((e) => e.value).toList();
+
+              var getUserData = getChatRooms.children
                   .map((e) => ChatRoomModel.fromJson(
                       json: e.value as Map<Object?, Object?>,
                       messageId: e.key.toString(),
                       chatId: chatId,
-                      userModel: getUserModel))
+                      userModel: getUserModel,
+                      users: [getMember]))
                   .last;
 
               provider.updateChatRoomModel(getUserData);
+            }
+          }
+        }
+      },
+    );
+  }
+
+  getGroupChatRooms() {
+    database
+        .ref("users/${auth.currentUser!.uid}/Mychatrooms/Group/")
+        .onChildAdded
+        .listen(
+      (event) async {
+        if (event.snapshot.exists) {
+          // provider.removeLastMessage();
+          var getChatrooms =
+              event.snapshot.children.map((e) => e.value.toString());
+
+          for (var chatId in getChatrooms) {
+            var getMemberList =
+                await database.ref("ChatRooms/$chatId/Members/").get();
+            var getUserList =
+                await database.ref("ChatRooms/$chatId/Members/users").get();
+            var getChatRooms =
+                await database.ref("ChatRooms/$chatId/Chats/").get();
+
+            if (getUserList.children.isNotEmpty) {
+              var currentUserData = getUserList.children.firstWhere((element) =>
+                  element.value.toString() == auth.currentUser!.uid);
+
+              if (currentUserData.exists) {
+                var getGroupModel = GroupChatModel.fromJson(
+                    getMemberList.value as Map<Object?, Object?>,
+                    chatId.toString());
+
+                var getUserData = getChatRooms.children
+                    .map((e) => ChatRoomModel.fromJson(
+                          json: e.value as Map<Object?, Object?>,
+                          messageId: e.key.toString(),
+                          chatId: chatId,
+                          groupModel: getGroupModel,
+                        ))
+                    .last;
+
+                provider.updateChatRoomModel(getUserData);
+              }
             }
           }
         }
@@ -95,7 +143,7 @@ class DatabaseEventListner {
   updateUserStatus(DatabaseEvent event) {
     final userList = provider.chatRoomModel.map((e) => e.userModel).toList();
     var isUpdatable = userList
-        .where((element) => element.userId == event.snapshot.key.toString())
+        .where((element) => element!.userId == event.snapshot.key.toString())
         .toList();
     if (isUpdatable.isEmpty) return;
     final roomIndex = provider.chatRoomModel

@@ -56,7 +56,7 @@ class GetterSetterModel with ChangeNotifier {
   }
 
   updateUserStatus(String status, int index) {
-    _chatRoomModel[index].userModel.status = status;
+    _chatRoomModel[index].userModel!.status = status;
     notifyListeners();
   }
 

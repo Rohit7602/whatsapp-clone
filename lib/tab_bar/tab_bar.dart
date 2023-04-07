@@ -54,6 +54,8 @@ class _HomeTabBarState extends State<HomeTabBar>
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
     DatabaseEventListner(context: context, provider: provider)
         .getAllChatRooms();
+    DatabaseEventListner(context: context, provider: provider)
+        .getGroupChatRooms();
   }
 
   Future<bool> rebuild() async {

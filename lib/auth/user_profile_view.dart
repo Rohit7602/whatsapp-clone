@@ -9,7 +9,7 @@ import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/widget/Custom_TextField/suffxIcon_field.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/pick_mobile_image.dart';
-import '../components/show_loading.dart';
+import '../components/Loader/button_loader.dart';
 import '../components/text_field_empty_error.dart';
 import '../components/upload_image_db.dart';
 import '../function/custom_appbar.dart';
@@ -107,7 +107,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                       AppServices.addHeight(30),
                       provider.isLoading
-                          ? showLoading()
+                          ? const ButtonLoader()
                           : SaveProfileButton(context, provider),
                     ],
                   ),
@@ -140,7 +140,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         if (_key.currentState!.validate() && pickedFile != null) {
           provider.loadingState(true);
 
-          downloadUrl = await uploadImageOnDb("profile_image", pickedFile);
+          setState(() async {
+            downloadUrl = await uploadImageOnDb("profile_image", pickedFile);
+          });
+
           if (downloadUrl.isNotEmpty) {
             AppServices.keyboardUnfocus(context);
             createUser(context, nameController, widget.phoneNumber,

@@ -5,13 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:whatsapp_clone/components/profile_avatar.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/model/user_model.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
+import '../../components/Loader/button_loader.dart';
 import '../../components/profile_image_dialog.dart';
-import '../../components/show_loading.dart';
 import '../../components/upload_image_db.dart';
 import '../../function/custom_appbar.dart';
 import '../../helper/base_getters.dart';
@@ -296,7 +297,7 @@ class _NameModalBottomSheetState extends State<NameModalBottomSheet> {
               Flexible(
                   flex: 3,
                   child: isLoading
-                      ? showLoading()
+                      ? const ButtonLoader()
                       : CustomButton(
                           btnName: "Save",
                           onTap: () async {
@@ -395,7 +396,7 @@ class _DescriptionModalBottomSheetState
               Flexible(
                   flex: 3,
                   child: isLoading
-                      ? showLoading()
+                      ? const ButtonLoader()
                       : CustomButton(
                           btnName: "Save",
                           onTap: () async {

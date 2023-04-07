@@ -1,47 +1,29 @@
 // ignore_for_file: must_be_immutable, library_private_types_in_public_api, use_build_context_synchronously
 
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/screen/chat/show_chats.dart';
-import '../../function/custom_appbar.dart';
-import '../../helper/base_getters.dart';
-import '../../helper/styles/app_style_sheet.dart';
-import '../../model/user_model.dart';
+import 'package:whatsapp_clone/screen/group_chat/group_screen/show_group_chats.dart';
 
-class ChatRoomScreen extends StatefulWidget {
-  UserModel targetUser;
-  String chatRoomId;
+import '../../../function/custom_appbar.dart';
+import '../../../helper/base_getters.dart';
+import '../../../helper/styles/app_style_sheet.dart';
 
-  ChatRoomScreen({
+class GroupChatRoomScreen extends StatefulWidget {
+  String groupName;
+  String groupId;
+  GroupChatRoomScreen({
+    required this.groupName,
+    required this.groupId,
     super.key,
-    required this.targetUser,
-    required this.chatRoomId,
   });
 
   @override
-  _ChatRoomScreenState createState() => _ChatRoomScreenState();
+  _GroupChatRoomScreenState createState() => _GroupChatRoomScreenState();
 }
 
-class _ChatRoomScreenState extends State<ChatRoomScreen> {
-  final TextEditingController messageController = TextEditingController();
-
+class _GroupChatRoomScreenState extends State<GroupChatRoomScreen> {
   ScrollController? scrollController;
-  bool isFieldEmpty = true;
   bool showEmoji = false;
-  File? pickedFile;
-  bool isLoading = false;
-  bool isShowMessage = false;
   bool isSelected = false;
-
-  @override
-  void initState() {
-    var provider = Provider.of<GetterSetterModel>(context, listen: false);
-    provider.updateChatRoomId("");
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,27 +45,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               title: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.targetUser.name),
+                  const Text("New Group"),
                   AppServices.addHeight(2),
-                  Consumer<GetterSetterModel>(
-                    builder: (context, data, child) {
-                      return data.chatRoomModel
-                              .where((element) =>
-                                  element.userModel!.userId ==
-                                  widget.targetUser.userId)
-                              .isEmpty
-                          ? Text("comming soon..",
-                              style: GetTextTheme.sf10_medium)
-                          : Text(
-                              data.chatRoomModel
-                                  .firstWhere((element) =>
-                                      element.userModel!.userId ==
-                                      widget.targetUser.userId)
-                                  .userModel!
-                                  .status,
-                              style: GetTextTheme.sf10_medium);
-                    },
-                  ),
                 ],
               ),
               action: isSelected
@@ -114,15 +77,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 AppImages.whatsappBG,
                 fit: BoxFit.cover,
               ),
-              ShowChatOnScreen(
-                showEmoji: showEmoji,
-                isFieldEmpty: isFieldEmpty,
-                messageController: messageController,
-                targetUser: widget.targetUser,
-                pickedFile: pickedFile,
-                chatRoomId: widget.chatRoomId,
-                isSelected: isSelected,
-                isShowMessage: isShowMessage,
+              ShowGroupChatOnScreen(
+                groupId: widget.groupId,
               )
             ],
           ),

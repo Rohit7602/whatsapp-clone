@@ -24,8 +24,6 @@ sendOTP(BuildContext context, TextEditingController numberController,
             codeSent: (codeSent, i) {
               otpCode = codeSent;
 
-              provider.loadingState(false);
-
               AppServices.pushTo(
                 context,
                 VerifyOTP(
@@ -38,6 +36,7 @@ sendOTP(BuildContext context, TextEditingController numberController,
             codeAutoRetrievalTimeout: (codeAutoRetrievalTimeout) {})
         .then((value) {});
   } catch (e) {
+    print("Error Checker :::::::::::::::::");
     print(e.toString());
     provider.loadingState(false);
   }

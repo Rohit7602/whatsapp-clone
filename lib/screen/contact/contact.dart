@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/database_event/event_listner.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/screen/group_chat/add_members.dart';
 import '../../helper/base_getters.dart';
@@ -21,6 +22,7 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     var provider = Provider.of<GetterSetterModel>(context);
     var userList = provider.getAllUser;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
@@ -33,7 +35,12 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+          IconButton(
+              onPressed: () {
+                DatabaseEventListner(context: context, provider: provider)
+                    .getAllChatRooms();
+              },
+              icon: const Icon(Icons.more_vert)),
         ],
       ),
       body: Padding(
@@ -92,15 +99,12 @@ class _ContactScreenState extends State<ContactScreen> {
 
                           var getChatRoomId = provider.chatRoomModel
                               .where((element) =>
-                                  element.userModel.number ==
+                                  element.userModel!.number ==
                                   userList[index].number)
                               .toList();
 
                           if (getChatRoomId.isNotEmpty) {
-                            print("firstCase");
-
-                            print(userList[index].number);
-
+                            print("If Case");
                             AppServices.pushTo(
                               context,
                               ChatRoomScreen(
@@ -111,12 +115,6 @@ class _ContactScreenState extends State<ContactScreen> {
                           } else {
                             print("run second Case");
 
-                            // AppServices.pushTo(
-                            //     context,
-                            //     TemporaryScreen(
-                            //       chatroomId: "",
-                            //       targetUser: userList[index],
-                            //     ));
                             AppServices.pushTo(
                                 context,
                                 ChatRoomScreen(

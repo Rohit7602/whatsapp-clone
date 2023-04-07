@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
 import '../app_config.dart';
-import '../components/show_loading.dart';
+import '../components/Loader/button_loader.dart';
 import 'components/verify_otp_fun.dart';
 import '../helper/base_getters.dart';
 import '../helper/styles/app_style_sheet.dart';
@@ -92,7 +92,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
                       ],
                     ),
                   ),
-                  provider.isLoading ? showLoading() : const SizedBox(),
+                  provider.isLoading ? const ButtonLoader() : const SizedBox(),
                 ],
               ),
             ),
