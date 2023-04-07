@@ -24,7 +24,9 @@ class AppColors {
 
 class AppImages {
   static const registerImage = "asset/register/register.png";
+  static const loginImage = "asset/register/login.gif";
   static const verifyOTPImage = "asset/register/verify_otp.jpg";
+  static const otpGif = "asset/register/otp.gif";
   static const defaultImage = "asset/default_image.png";
   static const chatGIF = "asset/homepage/chat.gif";
   static const arrowGIF = "asset/homepage/arrow.gif";

@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +29,31 @@ class _VerifyOTPState extends State<VerifyOTP> {
   final pinController = TextEditingController();
   final focusNode = FocusNode();
 
+  Timer? timer;
+  int resendOtpTime = 30;
+
+  void startTimer() {
+    var updateTime = const Duration(seconds: 1);
+
+    timer = Timer.periodic(updateTime, (timer) {
+      if (resendOtpTime == 0) {
+        setState(() {
+          timer.cancel();
+        });
+      } else {
+        setState(() {
+          resendOtpTime--;
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    startTimer();
+    super.initState();
+  }
+
   @override
   void dispose() {
     pinController.dispose();
@@ -45,7 +72,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
       width: 56,
       height: 56,
       textStyle:
-          GetTextTheme.sf22_regular.copyWith(color: AppColors.lightGreenColor),
+          GetTextTheme.sf22_regular.copyWith(color: AppColors.primaryColor),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(19),
         border: Border.all(color: borderColor),
@@ -62,9 +89,9 @@ class _VerifyOTPState extends State<VerifyOTP> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
-                  CustomAssetImage(context, 250, AppImages.verifyOTPImage,
+                  CustomAssetImage(context, 250, AppImages.otpGif,
                       const EdgeInsets.only(top: 20, bottom: 30)),
-                  Text("Verifying your number",
+                  Text("Enter Your OTP!!",
                       textAlign: TextAlign.center,
                       style: GetTextTheme.sf28_bold),
                   Padding(
@@ -72,7 +99,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
                     child: Text(
                         "$verifyOTPDescription ${widget.phoneNumber} recently.",
                         textAlign: TextAlign.center,
-                        style: GetTextTheme.sf14_regular),
+                        style: GetTextTheme.sf12_regular),
                   ),
                   Text("Request a call or wait before requesting an SMS.",
                       textAlign: TextAlign.center,
@@ -84,11 +111,16 @@ class _VerifyOTPState extends State<VerifyOTP> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: resendOtpTime != 0
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.spaceBetween,
                       children: [
-                        TextButton(
-                            onPressed: () {}, child: const Text("Resend OTP")),
-                        const Text("00:40 min")
+                        resendOtpTime != 0
+                            ? const SizedBox()
+                            : TextButton(
+                                onPressed: () {},
+                                child: const Text("Resend OTP")),
+                        Text("0:$resendOtpTime min")
                       ],
                     ),
                   ),
@@ -155,7 +187,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
         ),
       ),
       errorPinTheme: defaultPinTheme.copyBorderWith(
-        border: Border.all(color: Colors.redAccent),
+        border: Border.all(color: AppColors.redColor),
       ),
     );
   }

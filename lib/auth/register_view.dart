@@ -38,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 children: [
-                  CustomAssetImage(context, 250, AppImages.registerImage,
+                  CustomAssetImage(context, 250, AppImages.loginImage,
                       const EdgeInsets.symmetric(vertical: 30)),
                   Text("Let's Sign You in",
                       textAlign: TextAlign.center,
@@ -54,6 +54,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   PrimaryTextFieldView(
                     validator: phoneNumbeValidator(),
                     onChange: (v) {
+                      setState(() {
+                        numberController.text;
+                      });
                       if (v.length == 10) {
                         FocusScope.of(context).unfocus();
                       }
@@ -65,6 +68,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     controller: numberController,
                     fieldEmptyError: "Please Enter Text",
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "${numberController.text.length}/10",
+                          style: GetTextTheme.sf12_regular,
+                        ),
+                      ],
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 30),

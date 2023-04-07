@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/components/Loader/full_screen_loader.dart';
 import 'package:whatsapp_clone/components/profile_avatar.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/widget/Custom_TextField/suffxIcon_field.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/pick_mobile_image.dart';
-import '../components/Loader/button_loader.dart';
 import '../components/text_field_empty_error.dart';
 import '../components/upload_image_db.dart';
 import '../function/custom_appbar.dart';
@@ -54,78 +54,93 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             showEmoji = false;
           });
         },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-                child: Form(
-                  key: _key,
-                  child: Column(
-                    children: [
-                      userProfileAvtar(pickedFile, () async {
-                        await showModalBottomSheet(
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(18),
-                                    topRight: Radius.circular(18))),
-                            context: context,
-                            builder: (_) {
-                              return const ImagePickerFunction();
-                            }).then((value) {
-                          setState(() {
-                            pickedFile = value;
-                          });
-                        });
-                      }),
-                      AppServices.addHeight(20),
-                      SecondaryTextFieldView(
-                        validator: fieldEmptyValidation("Name"),
-                        controller: nameController,
-                        hintText: "Enter your name",
-                        suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.emoji_emotions,
-                            color: AppColors.primaryColor,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 18),
+                    child: Form(
+                      key: _key,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: userProfileAvtar(pickedFile, () async {
+                              await showModalBottomSheet(
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(18),
+                                          topRight: Radius.circular(18))),
+                                  context: context,
+                                  builder: (_) {
+                                    return const ImagePickerFunction();
+                                  }).then((value) {
+                                setState(() {
+                                  pickedFile = value;
+                                });
+                              });
+                            }),
                           ),
-                        ),
-                      ),
-                      AppServices.addHeight(20),
-                      SecondaryTextFieldView(
-                        validator: fieldEmptyValidation("Description"),
-                        controller: descriptionController,
-                        hintText: "Enter your description",
-                        suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.emoji_emotions,
-                            color: AppColors.primaryColor,
+                          AppServices.addHeight(20),
+                          const Text("Enter Your Name"),
+                          AppServices.addHeight(10),
+                          SecondaryTextFieldView(
+                            validator: fieldEmptyValidation("Name"),
+                            controller: nameController,
+                            hintText: "Enter your name",
+                            suffixIcon: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.emoji_emotions,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
                           ),
-                        ),
+                          AppServices.addHeight(20),
+                          const Text("Enter Your Description"),
+                          AppServices.addHeight(10),
+                          SecondaryTextFieldView(
+                            validator: fieldEmptyValidation("Description"),
+                            controller: descriptionController,
+                            hintText: "Enter your description",
+                            suffixIcon: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.emoji_emotions,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                          AppServices.addHeight(30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SaveProfileButton(context, provider),
+                            ],
+                          ),
+                        ],
                       ),
-                      AppServices.addHeight(30),
-                      provider.isLoading
-                          ? const ButtonLoader()
-                          : SaveProfileButton(context, provider),
-                    ],
-                  ),
-                ),
-              ),
-              if (showEmoji)
-                SizedBox(
-                  height: 300,
-                  child: EmojiPicker(
-                    textEditingController: nameController,
-                    config: Config(
-                      columns: 7,
-                      emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
                     ),
                   ),
-                )
-            ],
-          ),
+                  if (showEmoji)
+                    SizedBox(
+                      height: 300,
+                      child: EmojiPicker(
+                        textEditingController: nameController,
+                        config: Config(
+                          columns: 7,
+                          emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                        ),
+                      ),
+                    )
+                ],
+              ),
+            ),
+            provider.isLoading ? const FullScreenLoader() : const SizedBox()
+          ],
         ),
       ),
     );
@@ -140,9 +155,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         if (_key.currentState!.validate() && pickedFile != null) {
           provider.loadingState(true);
 
-          setState(() async {
-            downloadUrl = await uploadImageOnDb("profile_image", pickedFile);
-          });
+          downloadUrl = await uploadImageOnDb("profile_image", pickedFile);
 
           if (downloadUrl.isNotEmpty) {
             AppServices.keyboardUnfocus(context);
