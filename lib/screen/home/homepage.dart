@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
+import 'package:whatsapp_clone/widget/asset_image.dart';
 import '../../database_event/chat_event.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';

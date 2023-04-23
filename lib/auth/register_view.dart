@@ -6,7 +6,7 @@ import 'package:whatsapp_clone/components/Loader/full_screen_loader.dart';
 import 'package:whatsapp_clone/controller/firebase_controller.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
-import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
+import 'package:whatsapp_clone/widget/asset_image.dart';
 import 'package:whatsapp_clone/widget/Custom_TextField/primary_textfield.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import '../app_config.dart';

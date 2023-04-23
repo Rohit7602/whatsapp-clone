@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/cupertino.dart';
-import '../../helper/base_getters.dart';
+import '../helper/base_getters.dart';
 
 Container CustomAssetImage(BuildContext context, double height,
     String assetImage, EdgeInsetsGeometry? margin) {

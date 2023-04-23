@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/components/snackbars/valt_snackbar.dart';
+import 'package:whatsapp_clone/controller/firebase_ref.dart';
 
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 
@@ -69,12 +70,20 @@ class FirebaseController {
       var authUser = await auth.signInWithCredential(credential);
 
       if (authUser.user!.phoneNumber!.isNotEmpty) {
-        var userPath = await database.ref("users").get();
-        var getUserKey = userPath.children
-            .any((element) => element.key.toString() == auth.currentUser!.uid);
+        var getUser = await GetFirebaseRef.getCurrentUser(phoneNumber).get();
+        // var userPath = await database.ref("users").get();
+        // var getUserKey = userPath.children
+        //     .any((element) => element.key.toString() == auth.currentUser!.uid);
 
-        if (getUserKey == true) {
+        if (getUser.exists) {
           sharedPrefs!.setBool("isLogin", true);
+          DatabaseEventListner(context: context, provider: provider)
+              .getAllUsers();
+          DatabaseEventListner(context: context, provider: provider)
+              .getAllChatRooms();
+          DatabaseEventListner(context: context, provider: provider)
+              .getGroupChatRooms();
+
           AppServices.pushToAndRemove(context, HomeTabBar());
           provider.loadingState(false);
         } else {

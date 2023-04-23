@@ -39,8 +39,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   isLogin() async {
-    if (!await rebuild()) return;
     if (sharedPrefs!.getBool("isLogin") == true) {
+      if (!await rebuild()) return;
       var provider = Provider.of<GetterSetterModel>(context, listen: false);
       provider.removeChatRoom();
       DatabaseEventListner(context: context, provider: provider).getAllUsers();
@@ -56,6 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   )),
           (route) => false);
     } else {
+      if (!await rebuild()) return;
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const RegisterScreen()),
           (route) => false);
