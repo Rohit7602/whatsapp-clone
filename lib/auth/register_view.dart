@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/auth/components/send_otp.dart';
 import 'package:whatsapp_clone/components/Loader/full_screen_loader.dart';
+import 'package:whatsapp_clone/controller/firebase_controller.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
 import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
@@ -81,25 +81,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 30),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Carrier charges may apply.",
-                        style: GetTextTheme.sf12_regular
-                            .copyWith(color: AppColors.greyColor.shade400),
-                      ),
-                    ),
-                  ),
                   CustomButton(
                     btnName: "Next",
                     onTap: () {
                       if (_key.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
-                        sendOTP(context, numberController, otpCode);
+                        FirebaseController(context, provider)
+                            .sendOTP(context, numberController, otpCode);
                       }
                     },
+                  ),
+                  AppServices.addHeight(10),
+                  Text(
+                    "Carrier charges may apply.",
+                    textAlign: TextAlign.center,
+                    style: GetTextTheme.sf12_regular
+                        .copyWith(color: AppColors.greyColor.shade400),
                   ),
                 ],
               ),

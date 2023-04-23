@@ -5,11 +5,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
+import 'package:whatsapp_clone/controller/firebase_controller.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-import 'package:whatsapp_clone/widget/Custom_Image_Fun/custom_image_fun.dart';
+import 'package:whatsapp_clone/widget/custom_button.dart';
 import '../app_config.dart';
 import '../components/Loader/button_loader.dart';
-import 'components/verify_otp_fun.dart';
 import '../helper/base_getters.dart';
 import '../helper/styles/app_style_sheet.dart';
 
@@ -88,23 +88,19 @@ class _VerifyOTPState extends State<VerifyOTP> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomAssetImage(context, 250, AppImages.otpGif,
-                      const EdgeInsets.only(top: 20, bottom: 30)),
-                  Text("Enter Your OTP!!",
-                      textAlign: TextAlign.center,
-                      style: GetTextTheme.sf28_bold),
+                  AppServices.addHeight(40),
+                  Text("Verifying\n your number!!",
+                      style: GetTextTheme.sf35_bold),
                   Padding(
-                    padding: const EdgeInsets.only(top: 30, bottom: 10),
+                    padding:
+                        const EdgeInsets.only(top: 30, bottom: 10, right: 40),
                     child: Text(
-                        "$verifyOTPDescription ${widget.phoneNumber} recently.",
-                        textAlign: TextAlign.center,
-                        style: GetTextTheme.sf12_regular),
+                        "$verifyOTPDescription${widget.phoneNumber} recently.",
+                        style: GetTextTheme.sf14_medium
+                            .copyWith(color: AppColors.greyColor)),
                   ),
-                  Text("Request a call or wait before requesting an SMS.",
-                      textAlign: TextAlign.center,
-                      style: GetTextTheme.sf14_regular
-                          .copyWith(color: AppColors.greyColor.shade500)),
                   AppServices.addHeight(20),
                   PinFieldView(defaultPinTheme, context, provider,
                       focusedBorderColor, fillColor),
@@ -124,7 +120,23 @@ class _VerifyOTPState extends State<VerifyOTP> {
                       ],
                     ),
                   ),
-                  provider.isLoading ? const ButtonLoader() : const SizedBox(),
+                  provider.isLoading
+                      ? const ButtonLoader()
+                      : CustomButton(
+                          btnName: "Verify",
+                          onTap: () {
+                            if (pinController.length == 6) {
+                              FocusScope.of(context).unfocus();
+                              if (_key.currentState!.validate()) {
+                                FirebaseController(context, provider).verifyOtp(
+                                    context,
+                                    widget.otpCode,
+                                    pinController,
+                                    widget.phoneNumber,
+                                    provider);
+                              }
+                            }
+                          })
                 ],
               ),
             ),
@@ -156,8 +168,8 @@ class _VerifyOTPState extends State<VerifyOTP> {
         if (value.length == 6) {
           FocusScope.of(context).unfocus();
           if (_key.currentState!.validate()) {
-            verifyOtp(context, widget.otpCode, pinController,
-                widget.phoneNumber, provider);
+            FirebaseController(context, provider).verifyOtp(context,
+                widget.otpCode, pinController, widget.phoneNumber, provider);
           }
         }
       },

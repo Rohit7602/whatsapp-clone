@@ -14,7 +14,7 @@ import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../../components/Loader/button_loader.dart';
 import '../../components/profile_image_dialog.dart';
 import '../../components/upload_image_db.dart';
-import '../../function/custom_appbar.dart';
+import '../../components/custom_appbar.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/global_function.dart';
 import '../../helper/styles/app_style_sheet.dart';

@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../components/upload_image_db.dart';
-import '../../function/custom_appbar.dart';
+import '../../components/custom_appbar.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/global_function.dart';
 import '../../helper/styles/app_style_sheet.dart';

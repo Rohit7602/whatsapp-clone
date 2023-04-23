@@ -6,12 +6,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/app_config.dart';
 import 'package:whatsapp_clone/auth/register_view.dart';
+import 'package:whatsapp_clone/controller/firebase_controller.dart';
 import 'package:whatsapp_clone/database_event/event_listner.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/helper/global_function.dart';
 import 'package:whatsapp_clone/splash.dart';
-import 'package:whatsapp_clone/function/snackbar.dart';
-import '../function/user_status.dart';
 import '../helper/base_getters.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
@@ -39,7 +38,7 @@ class _HomeTabBarState extends State<HomeTabBar>
         initialIndex: widget.currentIndex, vsync: this, length: 4);
     WidgetsBinding.instance.addObserver(this);
 
-    setUserStatus(context, "online");
+    FirebaseController.setUserStatus(context, "online");
     super.initState();
 
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
@@ -72,9 +71,9 @@ class _HomeTabBarState extends State<HomeTabBar>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      setUserStatus(context, "online");
+      FirebaseController.setUserStatus(context, "online");
     } else {
-      setUserStatus(context, "offline");
+      FirebaseController.setUserStatus(context, "offline");
     }
   }
 
@@ -93,7 +92,8 @@ class _HomeTabBarState extends State<HomeTabBar>
         timeBackPressed = DateTime.now();
 
         if (isExistWarning) {
-          showSnackBar(context, "Press back again to exist");
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Press back again to exist")));
           return false;
         } else {
           return true;
@@ -166,7 +166,7 @@ class _HomeTabBarState extends State<HomeTabBar>
       labelStyle: GetTextTheme.sf14_bold,
       automaticIndicatorColorAdjustment: true,
       indicatorSize: TabBarIndicatorSize.tab,
-      indicatorWeight: 4,
+      indicatorWeight: 14,
       isScrollable: true,
       labelColor: AppColors.whiteColor,
       indicatorColor: AppColors.whiteColor,
@@ -183,7 +183,8 @@ class _HomeTabBarState extends State<HomeTabBar>
 
   Container TabsController(dynamic tabName) {
     return Container(
-        margin: const EdgeInsets.only(right: 10),
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(right: 10, top: 10),
         padding: const EdgeInsets.only(bottom: 10),
         child: tabName);
   }

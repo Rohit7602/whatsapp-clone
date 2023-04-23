@@ -50,6 +50,10 @@ dependencies:
   cached_network_image: ^3.2.3
   flutter_spinkit: ^5.1.0
   shimmer: ^2.0.0
+  story_view: ^0.14.0
+  fancy_snackbar:
+    git:
+      url: https://github.com/MR0100/fancy_snackbar.git
   
 
 dev_dependencies:

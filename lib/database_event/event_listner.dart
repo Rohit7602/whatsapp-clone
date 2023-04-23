@@ -112,6 +112,9 @@ class DatabaseEventListner {
     );
   }
 
+
+
+  // function to get all available users in Hexchat
   getAllUsers() {
     database.ref("users").onValue.listen((event) {
       provider.emptyGetUserList();

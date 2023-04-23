@@ -19,19 +19,24 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-          fixedSize: MaterialStateProperty.all(
-              Size(MediaQuery.of(context).size.width - 100, 45)),
-          backgroundColor: MaterialStateProperty.all(btnColor),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ))),
-      onPressed: () => onTap(),
-      child: Text(
-        btnName,
-        style: const TextStyle(color: AppColors.whiteColor),
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          style: ButtonStyle(
+              fixedSize: MaterialStateProperty.all(
+                  Size(MediaQuery.of(context).size.width - 100, 45)),
+              backgroundColor: MaterialStateProperty.all(btnColor),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ))),
+          onPressed: () => onTap(),
+          child: Text(
+            btnName,
+            style: const TextStyle(color: AppColors.whiteColor),
+          ),
+        ),
+      ],
     );
   }
 }

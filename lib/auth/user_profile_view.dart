@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/components/Loader/full_screen_loader.dart';
 import 'package:whatsapp_clone/components/profile_avatar.dart';
+import 'package:whatsapp_clone/controller/firebase_controller.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/widget/Custom_TextField/suffxIcon_field.dart';
 import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/pick_mobile_image.dart';
 import '../components/text_field_empty_error.dart';
 import '../components/upload_image_db.dart';
-import '../function/custom_appbar.dart';
+import '../components/custom_appbar.dart';
 import '../helper/base_getters.dart';
 import '../helper/styles/app_style_sheet.dart';
-import 'components/create_user.dart';
 
 class UserProfileScreen extends StatefulWidget {
   String phoneNumber;
@@ -88,6 +88,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           const Text("Enter Your Name"),
                           AppServices.addHeight(10),
                           SecondaryTextFieldView(
+                            prefixIcon: const Icon(Icons.person),
                             validator: fieldEmptyValidation("Name"),
                             controller: nameController,
                             hintText: "Enter your name",
@@ -103,6 +104,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           const Text("Enter Your Description"),
                           AppServices.addHeight(10),
                           SecondaryTextFieldView(
+                            prefixIcon: const Icon(Icons.description),
                             validator: fieldEmptyValidation("Description"),
                             controller: descriptionController,
                             hintText: "Enter your description",
@@ -158,9 +160,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           downloadUrl = await uploadImageOnDb("profile_image", pickedFile);
 
           if (downloadUrl.isNotEmpty) {
-            AppServices.keyboardUnfocus(context);
-            createUser(context, nameController, widget.phoneNumber,
-                descriptionController, downloadUrl, provider);
+            FirebaseController(context, provider).createUser(
+                context,
+                nameController,
+                widget.phoneNumber,
+                descriptionController,
+                downloadUrl);
           } else {
             provider.loadingState(false);
           }

@@ -9,5 +9,4 @@ const registerScreenDescription =
     "Hex Chat will need to verify your phone number.";
 
 // This Description Text used in Verify OTP Screen
-const verifyOTPDescription =
-    "Can't send and SMS with your code because you've tried to register +91";
+const verifyOTPDescription = "We’ve sent your verification code to +91 ";

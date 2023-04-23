@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/screen/group_chat/group_screen/show_group_chats.dart';
 
-import '../../../function/custom_appbar.dart';
+import '../../../components/custom_appbar.dart';
 import '../../../helper/base_getters.dart';
 import '../../../helper/styles/app_style_sheet.dart';
 

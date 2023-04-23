@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/function/custom_appbar.dart';
+import 'package:whatsapp_clone/components/custom_appbar.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
 
 import '../../getter_setter/getter_setter.dart';

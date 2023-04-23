@@ -8,6 +8,7 @@ import '../../helper/styles/app_style_sheet.dart';
 class SecondaryTextFieldView extends StatelessWidget {
   TextEditingController? controller;
   dynamic suffixIcon;
+  dynamic prefixIcon;
   String hintText;
   String fieldEmptyError;
   Function(String)? onChange;
@@ -16,6 +17,7 @@ class SecondaryTextFieldView extends StatelessWidget {
   SecondaryTextFieldView(
       {this.controller,
       this.suffixIcon,
+      this.prefixIcon,
       this.hintText = "",
       this.fieldEmptyError = "",
       this.onChange,
@@ -37,6 +39,7 @@ class SecondaryTextFieldView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [AppServices.addWidth(10), suffixIcon],
           ),
+          prefixIcon: prefixIcon,
           hintText: hintText,
           hintStyle: GetTextTheme.sf14_regular
               .copyWith(color: AppColors.blackColor.withOpacity(0.3)),
