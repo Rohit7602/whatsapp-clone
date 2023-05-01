@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,9 +54,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   PrimaryTextFieldView(
                     validator: phoneNumbeValidator(),
                     onChange: (v) {
-                      setState(() {
-                        numberController.text;
-                      });
                       if (v.length == 10) {
                         FocusScope.of(context).unfocus();
                       }
@@ -69,25 +66,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: numberController,
                     fieldEmptyError: "Please Enter Text",
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          "${numberController.text.length}/10",
-                          style: GetTextTheme.sf12_regular,
-                        ),
-                      ],
-                    ),
-                  ),
                   CustomButton(
                     btnName: "Next",
-                    onTap: () {
+                    onTap: () async {
                       if (_key.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
                         FirebaseController(context, provider)
-                            .sendOTP(context, numberController, otpCode);
+                            .getInitUser(numberController.text);
                       }
                     },
                   ),

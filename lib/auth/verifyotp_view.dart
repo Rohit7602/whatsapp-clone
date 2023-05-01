@@ -116,7 +116,7 @@ class _VerifyOTPState extends State<VerifyOTP> {
                             : TextButton(
                                 onPressed: () {},
                                 child: const Text("Resend OTP")),
-                        Text("0:$resendOtpTime min")
+                        Text("00:$resendOtpTime sec")
                       ],
                     ),
                   ),

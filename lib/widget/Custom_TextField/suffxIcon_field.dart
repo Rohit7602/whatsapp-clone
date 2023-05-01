@@ -11,6 +11,7 @@ class SecondaryTextFieldView extends StatelessWidget {
   dynamic prefixIcon;
   String hintText;
   String fieldEmptyError;
+  bool readOnly;
   Function(String)? onChange;
   String? Function(String?)? validator;
 
@@ -20,6 +21,7 @@ class SecondaryTextFieldView extends StatelessWidget {
       this.prefixIcon,
       this.hintText = "",
       this.fieldEmptyError = "",
+      this.readOnly = false,
       this.onChange,
       this.validator,
       super.key});
@@ -27,6 +29,7 @@ class SecondaryTextFieldView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      readOnly: readOnly ? true : false,
       textCapitalization: TextCapitalization.words,
       onChanged: onChange,
       style: GetTextTheme.sf14_regular,
@@ -37,7 +40,7 @@ class SecondaryTextFieldView extends StatelessWidget {
           suffixIcon: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
-            children: [AppServices.addWidth(10), suffixIcon],
+            children: [AppServices.addWidth(10), suffixIcon ?? SizedBox()],
           ),
           prefixIcon: prefixIcon,
           hintText: hintText,

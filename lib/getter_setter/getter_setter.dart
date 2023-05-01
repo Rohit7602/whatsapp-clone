@@ -13,6 +13,13 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
+  final Map<String, dynamic> _profileForm = {};
+  Map<String, dynamic> get profileForm => _profileForm;
+  updateProfileForm(Map<String, dynamic> form) {
+    _profileForm.addAll(form);
+    notifyListeners();
+  }
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   loadingState(bool loading) {

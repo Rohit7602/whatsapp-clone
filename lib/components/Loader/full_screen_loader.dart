@@ -19,7 +19,7 @@ class FullScreenLoader extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: AppColors.whiteColor),
-        child: SpinKitCircle(
+        child: const SpinKitCircle(
           color: Colors.red,
           size: 45.0,
         ),

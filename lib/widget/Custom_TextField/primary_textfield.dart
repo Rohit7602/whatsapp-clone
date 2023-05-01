@@ -30,6 +30,7 @@ class PrimaryTextFieldView extends StatelessWidget {
       style: GetTextTheme.sf14_regular,
       validator: validator,
       controller: controller,
+      maxLength: 10,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           contentPadding: const EdgeInsets.fromLTRB(20, 5, 10, 5),

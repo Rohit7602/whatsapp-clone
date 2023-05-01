@@ -18,9 +18,7 @@ class _StatusScreenState extends State<StatusScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: InkWell(
-        onTap: () {
-          
-        },
+        onTap: () {},
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           height: 70,

@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
+import 'package:whatsapp_clone/helper/global_function.dart';
 import 'package:whatsapp_clone/screen/chat/show_chats.dart';
+import '../../components/Loader/full_screen_loader.dart';
 import '../../components/custom_appbar.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/styles/app_style_sheet.dart';
@@ -39,12 +41,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   void initState() {
     var provider = Provider.of<GetterSetterModel>(context, listen: false);
     provider.updateChatRoomId("");
+    provider.loadingState(false);
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<GetterSetterModel>(context);
     return GestureDetector(
       onTap: () => AppServices.keyboardUnfocus(context),
       child: WillPopScope(
@@ -99,8 +103,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         onPressed: () {},
                       ),
                       IconButton(
-                        icon: const Icon(Icons.call),
-                        onPressed: () {},
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => deleteInitChat(),
                       ),
                       IconButton(
                         icon: const Icon(Icons.more_vert),
@@ -123,12 +127,24 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 chatRoomId: widget.chatRoomId,
                 isSelected: isSelected,
                 isShowMessage: isShowMessage,
-              )
+              ),
+              provider.isLoading ? const FullScreenLoader() : const SizedBox()
             ],
           ),
         ),
       ),
     );
+  }
+
+  deleteInitChat() async {
+    var provider = Provider.of<GetterSetterModel>(context, listen: false);
+    provider.loadingState(true);
+    var getData = await database
+        .ref("ChatRooms/${widget.chatRoomId}")
+        .remove()
+        .then((value) {
+      provider.loadingState(false);
+    });
   }
 }
 

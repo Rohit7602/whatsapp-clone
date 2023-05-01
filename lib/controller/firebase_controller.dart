@@ -3,10 +3,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/components/snackbars/valt_snackbar.dart';
-import 'package:whatsapp_clone/controller/firebase_ref.dart';
-
+import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
-
 import '../auth/user_profile_view.dart';
 import '../auth/verifyotp_view.dart';
 import '../database_event/event_listner.dart';
@@ -14,6 +12,9 @@ import '../helper/base_getters.dart';
 import '../helper/global_function.dart';
 import '../main.dart';
 import '../tab_bar/tab_bar.dart';
+import 'get_firebase_ref.dart';
+
+String otpCode = "";
 
 class FirebaseController {
   BuildContext context;
@@ -21,13 +22,12 @@ class FirebaseController {
   FirebaseController(this.context, this.provider);
 
   // This function use in send to verification code in Mobile number.
-  Future sendOTP(BuildContext context, TextEditingController numberController,
-      String otpCode) async {
+  Future sendOTP(BuildContext context, String numberController) async {
     try {
       provider.loadingState(true);
       await auth
           .verifyPhoneNumber(
-              phoneNumber: "+91 ${numberController.text}",
+              phoneNumber: "+91 $numberController",
               verificationCompleted: (verificationCompleted) {
                 provider.loadingState(false);
               },
@@ -40,8 +40,7 @@ class FirebaseController {
                 AppServices.pushTo(
                   context,
                   VerifyOTP(
-                      phoneNumber: numberController.text.trim(),
-                      otpCode: otpCode),
+                      phoneNumber: numberController.trim(), otpCode: otpCode),
                 );
 
                 provider.loadingState(false);
@@ -69,28 +68,30 @@ class FirebaseController {
 
       var authUser = await auth.signInWithCredential(credential);
 
-      if (authUser.user!.phoneNumber!.isNotEmpty) {
-        var getUser = await GetFirebaseRef.getCurrentUser(phoneNumber).get();
-        // var userPath = await database.ref("users").get();
-        // var getUserKey = userPath.children
-        //     .any((element) => element.key.toString() == auth.currentUser!.uid);
+      if (authUser.additionalUserInfo!.isNewUser) {
+        createUser(context, phoneNumber);
 
-        if (getUser.exists) {
-          sharedPrefs!.setBool("isLogin", true);
-          DatabaseEventListner(context: context, provider: provider)
-              .getAllUsers();
-          DatabaseEventListner(context: context, provider: provider)
-              .getAllChatRooms();
-          DatabaseEventListner(context: context, provider: provider)
-              .getGroupChatRooms();
+        // Map<String, dynamic> bodyData = {
+        //   "UserId": auth.currentUser!.uid,
+        //   "CreatedOn": DateTime.now().toIso8601String(),
+        // };
+        // provider.profileForm.addAll(bodyData);
 
-          AppServices.pushToAndRemove(context, HomeTabBar());
-          provider.loadingState(false);
-        } else {
-          AppServices.pushToAndRemove(
-              context, UserProfileScreen(phoneNumber: phoneNumber));
-          provider.loadingState(false);
-        }
+        // database
+        //     .ref("users/${auth.currentUser!.uid}")
+        //     .set(provider.profileForm);
+
+        // sharedPrefs!.setBool("isLogin", true);
+
+        // DatabaseEventListner(context: context, provider: provider)
+        //     .getAllUsers();
+        // DatabaseEventListner(context: context, provider: provider)
+        //     .getAllChatRooms();
+        // DatabaseEventListner(context: context, provider: provider)
+        //     .getGroupChatRooms();
+
+        // AppServices.pushToAndRemove(context, HomeTabBar());
+        // provider.loadingState(false);
       }
     } catch (e) {
       print(e.toString());
@@ -102,37 +103,46 @@ class FirebaseController {
   // function to create user Profile in Hex Chat
   Future createUser(
     BuildContext context,
-    TextEditingController nameController,
     String phoneNumber,
-    TextEditingController descriptionController,
-    String downloadUrl,
   ) async {
     try {
-      provider.loadingState(true);
-      Map<String, dynamic> bodyData = {
-        "Name": nameController.text,
-        "Number": phoneNumber,
-        "Description": descriptionController.text,
-        "UserId": auth.currentUser!.uid,
-        "ProfileImage": downloadUrl.isEmpty ? "" : downloadUrl,
-        "CreatedOn": DateTime.now().toIso8601String(),
-      };
+      String downloadUrl = await uploadImageOnDb(
+          "profile_image", provider.profileForm["ProfileImage"]);
 
-      await database
-          .ref("users/${auth.currentUser!.uid}")
-          .set(bodyData)
-          .then((value) async {
-        sharedPrefs!.setBool("isLogin", true);
-        // provider.removeChatRoom();
-        DatabaseEventListner(context: context, provider: provider)
-            .getAllUsers();
+      if (downloadUrl.isNotEmpty) {
+        Map<String, dynamic> bodyData = {
+          "Name": provider.profileForm["Name"],
+          "Number": phoneNumber,
+          "Description": provider.profileForm["Description"],
+          "UserId": auth.currentUser!.uid,
+          "ProfileImage": downloadUrl.isEmpty ? "" : downloadUrl,
+          "CreatedOn": DateTime.now().toIso8601String(),
+        };
 
-        ShowSnackbar(context: context, message: "Register Success").success();
+        await database
+            .ref("users/${auth.currentUser!.uid}")
+            .set(bodyData)
+            .then((value) async {
+          sharedPrefs!.setBool("isLogin", true);
+          // provider.removeChatRoom();
+          DatabaseEventListner(context: context, provider: provider)
+              .getAllUsers();
 
-        AppServices.pushToAndRemove(context, HomeTabBar());
-      }).then((value) {
+          DatabaseEventListner(context: context, provider: provider)
+              .getAllChatRooms();
+          DatabaseEventListner(context: context, provider: provider)
+              .getGroupChatRooms();
+
+          ShowSnackbar(context: context, message: "Register Success").success();
+
+          AppServices.pushToAndRemove(context, HomeTabBar());
+        }).then((value) {
+          provider.loadingState(false);
+        });
+      } else {
+        ShowSnackbar(context: context, message: "Error").error();
         provider.loadingState(false);
-      });
+      }
     } catch (e) {
       print(e.toString());
       provider.loadingState(false);
@@ -172,5 +182,32 @@ class FirebaseController {
     database.ref("users/${auth.currentUser!.uid}").update({
       "Status": status,
     });
+  }
+
+  // function to get user and navigate new screen
+  getInitUser(String number) async {
+    try {
+      provider.loadingState(true);
+      var getUser = await GetFirebaseRef.getInitUser(number).get();
+
+      if (getUser.exists) {
+        FirebaseController(context, provider).sendOTP(context, number);
+        provider.loadingState(false);
+      } else {
+        AppServices.pushTo(
+            context,
+            UserProfileScreen(
+              phoneNumber: number,
+              otpCode: otpCode,
+            ));
+        provider.loadingState(false);
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e.toString());
+      provider.loadingState(false);
+    } catch (e) {
+      print(e);
+      provider.loadingState(false);
+    }
   }
 }
