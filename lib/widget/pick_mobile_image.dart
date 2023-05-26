@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, must_be_immutable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:whatsapp_clone/controller/image_controller.dart';
 import '../components/upload_image_db.dart';
 
 class ImagePickerFunction extends StatelessWidget {
@@ -15,7 +16,7 @@ class ImagePickerFunction extends StatelessWidget {
         children: [
           ListTile(
             onTap: () async {
-              await pickImageWithCamera().then((value) {
+              await ImageController. pickImageWithCamera().then((value) {
                 Navigator.of(context).pop(value);
               });
             },
@@ -25,7 +26,7 @@ class ImagePickerFunction extends StatelessWidget {
           const Divider(),
           ListTile(
             onTap: () async {
-              await pickImageWithGallery().then((value) {
+              await ImageController.pickImageWithGallery().then((value) {
                 Navigator.of(context).pop(value);
               });
             },

@@ -27,8 +27,8 @@ class GetterSetterModel with ChangeNotifier {
     notifyListeners();
   }
 
-  UserModel? _userModel;
-  UserModel get userModel => _userModel!;
+  dynamic _userModel;
+  UserModel get userModel => _userModel;
   getUserModel(UserModel data) {
     _userModel = data;
     notifyListeners();
@@ -119,4 +119,11 @@ class GetterSetterModel with ChangeNotifier {
     _getChatRoomId = "";
     notifyListeners();
   }
+
+//   final dynamic _myStatusModel = {};
+// List<StatusModel> myStatus => _myStatusModel;
+
+// addMyStatus(List<StatusModel> status){
+
+// }
 }

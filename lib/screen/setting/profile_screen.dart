@@ -13,8 +13,8 @@ import 'package:whatsapp_clone/widget/custom_button.dart';
 import 'package:whatsapp_clone/widget/custom_text_field.dart';
 import '../../components/Loader/button_loader.dart';
 import '../../components/profile_image_dialog.dart';
-import '../../components/upload_image_db.dart';
 import '../../components/custom_appbar.dart';
+import '../../controller/image_controller.dart';
 import '../../helper/base_getters.dart';
 import '../../helper/global_function.dart';
 import '../../helper/styles/app_style_sheet.dart';
@@ -171,7 +171,7 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                   InkWell(
                     onTap: () async {
                       AppServices.popView(context);
-                      pickedFile = await pickImageWithCamera();
+                      pickedFile = await ImageController.pickImageWithCamera();
 
                       showDialog(
                           context: context,
@@ -206,7 +206,7 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      pickedFile = await pickImageWithGallery();
+                      pickedFile = await ImageController.pickImageWithGallery();
 
                       setState(() {
                         pickedFile;

@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/components/snackbars/valt_snackbar.dart';
-import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import '../auth/user_profile_view.dart';
 import '../auth/verifyotp_view.dart';
@@ -13,6 +12,7 @@ import '../helper/global_function.dart';
 import '../main.dart';
 import '../tab_bar/tab_bar.dart';
 import 'get_firebase_ref.dart';
+import 'image_controller.dart';
 
 String otpCode = "";
 
@@ -42,7 +42,6 @@ class FirebaseController {
                   VerifyOTP(
                       phoneNumber: numberController.trim(), otpCode: otpCode),
                 );
-
                 provider.loadingState(false);
               },
               codeAutoRetrievalTimeout: (codeAutoRetrievalTimeout) {})
@@ -106,7 +105,7 @@ class FirebaseController {
     String phoneNumber,
   ) async {
     try {
-      String downloadUrl = await uploadImageOnDb(
+      String downloadUrl = await ImageController.uploadImageOnDb(
           "profile_image", provider.profileForm["ProfileImage"]);
 
       if (downloadUrl.isNotEmpty) {
@@ -187,12 +186,10 @@ class FirebaseController {
   // function to get user and navigate new screen
   getInitUser(String number) async {
     try {
-      provider.loadingState(true);
       var getUser = await GetFirebaseRef.getInitUser(number).get();
 
       if (getUser.exists) {
         FirebaseController(context, provider).sendOTP(context, number);
-        provider.loadingState(false);
       } else {
         AppServices.pushTo(
             context,

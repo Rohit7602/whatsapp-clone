@@ -70,6 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     btnName: "Next",
                     onTap: () async {
                       if (_key.currentState!.validate()) {
+                        provider.loadingState(true);
                         FocusScope.of(context).unfocus();
                         FirebaseController(context, provider)
                             .getInitUser(numberController.text);

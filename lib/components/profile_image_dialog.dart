@@ -3,8 +3,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
+import '../controller/image_controller.dart';
 import '../getter_setter/getter_setter.dart';
 import '../helper/global_function.dart';
 import '../model/user_model.dart';
@@ -75,8 +75,8 @@ class _ImageDialogState extends State<ImageDialog> {
     try {
       var provider = Provider.of<GetterSetterModel>(context, listen: false);
       await storage.refFromURL(widget.profileUrl).delete().then((value) async {
-        var downloadUrl =
-            await uploadImageOnDb("profile_image", widget.imageFile);
+        var downloadUrl = await ImageController.uploadImageOnDb(
+            "profile_image", widget.imageFile);
 
         if (downloadUrl != null) {
           var userProvider =

@@ -3,9 +3,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
 import '../../components/custom_appbar.dart';
+import '../../controller/image_controller.dart';
 import '../../helper/global_function.dart';
 import '../../helper/styles/app_style_sheet.dart';
 import '../../model/user_model.dart';
@@ -202,7 +202,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       setState(() {
         isLoading = true;
       });
-      profileUrl = await uploadImageOnDb("profile_image", pickedFile);
+      profileUrl =
+          await ImageController.uploadImageOnDb("profile_image", pickedFile);
 
       if (profileUrl.isNotEmpty) {
         await database
@@ -297,7 +298,7 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      pickedFile = await pickImageWithCamera();
+                      pickedFile = await ImageController.pickImageWithCamera();
                       Navigator.of(context).pop(pickedFile);
                     },
                     child: Container(
@@ -324,7 +325,7 @@ class _ProfileImageBottomSheetState extends State<ProfileImageBottomSheet> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      pickedFile = await pickImageWithGallery();
+                      pickedFile = await ImageController.pickImageWithGallery();
 
                       Navigator.of(context).pop(pickedFile);
                     },

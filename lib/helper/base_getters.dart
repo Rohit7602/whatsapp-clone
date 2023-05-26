@@ -39,4 +39,13 @@ class AppServices {
 // function to unfocus the keyboard on tap on screen
   static keyboardUnfocus(BuildContext context) =>
       FocusScope.of(context).unfocus();
+
+  static customDivider(double height) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: height),
+      child: const Divider(
+        thickness: 1,
+      ),
+    );
+  }
 }

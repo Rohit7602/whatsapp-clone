@@ -3,9 +3,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whatsapp_clone/components/upload_image_db.dart';
 import 'package:whatsapp_clone/getter_setter/getter_setter.dart';
 import 'package:whatsapp_clone/helper/base_getters.dart';
+import '../../../controller/image_controller.dart';
 import '../../../helper/global_function.dart';
 import '../../../helper/styles/app_style_sheet.dart';
 import '../../../model/user_model.dart';
@@ -80,26 +80,29 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                           children: [
                             InkWell(
                               onTap: () async {
-                                File pickedFile = await pickImageWithGallery();
+                                File pickedFile = await ImageController
+                                    .pickImageWithGallery();
                                 var provider = Provider.of<GetterSetterModel>(
                                     context,
                                     listen: false);
                                 if (widget.chatRoomId.isNotEmpty) {
                                   AppServices.pushTo(
-                                      context,
-                                      ChatImagePreview(
-                                        chatRoomId: widget.chatRoomId,
-                                        pickedFile: pickedFile,
-                                        targetUser: widget.targetUser,
-                                      ));
+                                    context,
+                                    ChatImagePreview(
+                                      chatRoomId: widget.chatRoomId,
+                                      pickedFile: pickedFile,
+                                      targetUser: widget.targetUser,
+                                    ),
+                                  );
                                 } else {
                                   AppServices.pushTo(
-                                      context,
-                                      ChatImagePreview(
-                                        chatRoomId: provider.getChatRoomId,
-                                        pickedFile: pickedFile,
-                                        targetUser: widget.targetUser,
-                                      ));
+                                    context,
+                                    ChatImagePreview(
+                                      chatRoomId: provider.getChatRoomId,
+                                      pickedFile: pickedFile,
+                                      targetUser: widget.targetUser,
+                                    ),
+                                  );
                                 }
                               },
                               child: const Icon(
@@ -113,7 +116,7 @@ class _ChatMessageTextFieldState extends State<ChatMessageTextField> {
                                 var provider = Provider.of<GetterSetterModel>(
                                     context,
                                     listen: false);
-                                File pickedImage = await pickImageWithCamera();
+                                File pickedImage = await ImageController.pickImageWithCamera();
                                 if (widget.chatRoomId.isNotEmpty) {
                                   AppServices.pushTo(
                                     context,

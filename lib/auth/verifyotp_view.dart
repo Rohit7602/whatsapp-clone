@@ -107,16 +107,44 @@ class _VerifyOTPState extends State<VerifyOTP> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Row(
-                      mainAxisAlignment: resendOtpTime != 0
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        resendOtpTime != 0
-                            ? const SizedBox()
-                            : TextButton(
-                                onPressed: () {},
-                                child: const Text("Resend OTP")),
-                        Text("00:$resendOtpTime sec")
+                        TextButton(
+                            onPressed: () => resendOtpTime != 0
+                                ? const SizedBox()
+                                : FirebaseController(context, provider)
+                                    .sendOTP(context, widget.phoneNumber),
+                            child: Text(
+                              "Resend OTP",
+                              style: GetTextTheme.sf14_regular.copyWith(
+                                  color: resendOtpTime != 0
+                                      ? AppColors.greyColor
+                                      : AppColors.blueColor),
+                            )),
+                        Row(
+                          children: [
+                            resendOtpTime != 0
+                                ? Container(
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: AppColors.whiteColor,
+                                            width: 1)),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.asset(
+                                        "asset/gif/timer.gif",
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                            AppServices.addWidth(7),
+                            Text("00:$resendOtpTime sec")
+                          ],
+                        ),
                       ],
                     ),
                   ),

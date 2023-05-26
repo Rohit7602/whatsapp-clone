@@ -15,7 +15,7 @@ import '../helper/base_getters.dart';
 import '../screen/call/recent_calls.dart';
 import '../screen/group_chat/group_screen.dart';
 import '../screen/home/homepage.dart';
-import '../screen/status/status.dart';
+import '../screen/status/status_tab.dart';
 import '../helper/styles/app_style_sheet.dart';
 
 class HomeTabBar extends StatefulWidget {
@@ -153,7 +153,7 @@ class _HomeTabBarState extends State<HomeTabBar>
           children: const [
             GroupScreen(),
             HomePageScreen(),
-            StatusScreen(),
+            StatusTabScreen(),
             RecentCallsScreen()
           ],
         ),

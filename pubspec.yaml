@@ -51,9 +51,12 @@ dependencies:
   flutter_spinkit: ^5.1.0
   shimmer: ^2.0.0
   story_view: ^0.14.0
+  awesome_dialog: ^3.0.2
+  timeago: ^3.2.0
   fancy_snackbar:
-    git:
+    git:  
       url: https://github.com/MR0100/fancy_snackbar.git
+
   
 
 dev_dependencies:
@@ -87,6 +90,7 @@ flutter:
       - asset/logo/
       - asset/homepage/
       - asset/chats/
+      - asset/gif/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
